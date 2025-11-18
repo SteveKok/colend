@@ -135,7 +135,7 @@ async function loop() {
         console.error('Error in main loop:', error);
     } finally {
         // Schedule next run
-        setTimeout(loop, 0);
+        setTimeout(loop, 5 * 1000);
     }
 }
 
