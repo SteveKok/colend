@@ -1,9 +1,9 @@
-import { set } from 'zod';
+import { de } from 'zod/v4/locales';
 import Colend from './contract/colend';
 import Telegram from './output/telegram';
 
 await Colend.init();
-await Telegram.init(['/menu', '/summary', '/fullDetail']);
+await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail']);
 
 async function loop() {
     try {
@@ -12,10 +12,17 @@ async function loop() {
 
         const detectedCommmands = await Telegram.getUpdate();
 
+        if (detectedCommmands.includes('/alive')) {
+            const message =
+                'No worry, I am still alive and working properly...';
+            await Telegram.sendTelegram(message);
+        }
+
         if (detectedCommmands.includes('/menu')) {
             let message = '🤖 <b>Colend Bot Menu</b>\n\n';
 
             message += 'Available commands:\n';
+            message += '/alive - Check if bot is alive\n';
             message += '/menu - Show this menu\n';
             message +=
                 '/summary - Show summary of borrowable and withdrawable amounts\n';
