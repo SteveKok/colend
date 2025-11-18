@@ -29,8 +29,6 @@ async function getUpdate() {
         }`
     ).then((res) => res.json());
 
-    console.log('Telegram getUpdates response:', data);
-
     const detectedCommands: string[] = [];
 
     for (const update of data.result) {
@@ -41,12 +39,7 @@ async function getUpdate() {
         const chat_id = String(update.message.chat.id);
         const text = update.message.text?.trim();
 
-        console.log('chat_id:', chat_id, 'text:', text);
-        console.log('Expected chat_id:', telegram_chat_id);
-        console.log('Expected commands:', commands);
-
         if (chat_id == telegram_chat_id && commands.includes(text || '')) {
-            console.log('Detected command:', text);
             detectedCommands.push(text!);
         }
     }
