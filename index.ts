@@ -105,7 +105,8 @@ async function loop() {
         }
 
         if (borrowableTokens.some((t) => t.status === 'Available to borrow')) {
-            let message = '📢 <b>Colend Borrowable Amounts Update</b>\n\n';
+            let message =
+                '🔥🔥🔥🔥🔥🔥🔥  <b>Colend Borrowable Amounts Update</b>\n\n';
 
             borrowableTokens.forEach((token) => {
                 if (token.status === 'Available to borrow') {
@@ -123,7 +124,8 @@ async function loop() {
         if (
             withdrawableTokens.some((t) => t.status === 'Available to withdraw')
         ) {
-            let message = '📢 <b>Colend Withdrawable Amounts Update</b>\n\n';
+            let message =
+                '🔥🔥🔥🔥🔥🔥🔥 <b>Colend Withdrawable Amounts Update</b>\n\n';
 
             withdrawableTokens.forEach((token) => {
                 if (token.status === 'Available to withdraw') {
