@@ -290,7 +290,9 @@ async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
         const totalBorrowed = reserveData.totalVariableDebt;
         // reserveData.totalStableDebt + reserveData.totalVariableDebt;
 
-        const liquidity = reserveData.totalAToken - totalBorrowed;
+        const liquidity =
+            (reserveData.totalAToken * reserveData.liquidityIndex) / 10n ** 2n -
+            totalBorrowed;
 
         const withdrawableAmount = liquidity > 0n ? liquidity : 0n;
 
