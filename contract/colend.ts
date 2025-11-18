@@ -169,7 +169,9 @@ async function borrowableTokens() {
             .then((data) => reserveDataSchema.parse(data));
 
         const totalSupplied =
-            (reserveData.totalAToken * reserveData.liquidityIndex) / 10n ** 27n;
+            ((reserveData.totalAToken - reserveData.accruedToTreasuryScaled) *
+                reserveData.liquidityIndex) /
+            10n ** 27n;
 
         const totalBorrowed =
             reserveData.totalStableDebt + reserveData.totalVariableDebt;
@@ -208,7 +210,7 @@ async function borrowableTokens() {
             continue;
         }
 
-        if (reserveData.totalAToken <= totalBorrowed) {
+        if (totalSupplied <= totalBorrowed) {
             results.push({
                 symbol: token.symbol,
                 totalSupplied: humanReadableAmount(
@@ -291,10 +293,12 @@ async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
             .then((data) => reserveDataSchema.parse(data));
 
         const totalSupplied =
-            (reserveData.totalAToken * reserveData.liquidityIndex) / 10n ** 27n;
+            ((reserveData.totalAToken - reserveData.accruedToTreasuryScaled) *
+                reserveData.liquidityIndex) /
+            10n ** 27n;
 
-        const totalBorrowed = reserveData.totalVariableDebt;
-        // reserveData.totalStableDebt + reserveData.totalVariableDebt;
+        const totalBorrowed =
+            reserveData.totalStableDebt + reserveData.totalVariableDebt;
 
         const liquidity = totalSupplied - totalBorrowed;
 
