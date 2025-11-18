@@ -62,8 +62,8 @@ async function loop() {
             let message = '📋 <b>Colend Full Details</b>\n\n';
             borrowableTokens.forEach((token) => {
                 message += `💰 <b>${Telegram.escapeHtml(token.symbol)}</b>\n`;
-                message += `• Total AToken: <code>${Telegram.escapeHtml(
-                    token.totalAToken
+                message += `• Total Supplied: <code>${Telegram.escapeHtml(
+                    token.totalSupplied
                 )}</code>\n`;
                 message += `• Total Borrowed: <code>${Telegram.escapeHtml(
                     token.totalBorrowed
@@ -84,8 +84,8 @@ async function loop() {
 
             withdrawableTokens.forEach((token) => {
                 message += ` 🏧 <b>${Telegram.escapeHtml(token.symbol)}</b>\n`;
-                message += `• Total AToken: <code>${Telegram.escapeHtml(
-                    token.totalAToken
+                message += `• Total Supplied: <code>${Telegram.escapeHtml(
+                    token.totalSupplied
                 )}</code>\n`;
                 message += `• Total Borrowed: <code>${Telegram.escapeHtml(
                     token.totalBorrowed

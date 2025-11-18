@@ -168,10 +168,13 @@ async function borrowableTokens() {
             .getReserveData(token.tokenAddress)
             .then((data) => reserveDataSchema.parse(data));
 
+        const totalSupplied =
+            reserveData.totalAToken ** reserveData.liquidityIndex / 10n ** 27n;
+
         const totalBorrowed =
             reserveData.totalStableDebt + reserveData.totalVariableDebt;
 
-        const liquidity = reserveData.totalAToken - totalBorrowed;
+        const liquidity = totalSupplied - totalBorrowed;
 
         if (
             totalBorrowed >=
@@ -179,8 +182,8 @@ async function borrowableTokens() {
         ) {
             results.push({
                 symbol: token.symbol,
-                totalAToken: humanReadableAmount(
-                    reserveData.totalAToken,
+                totalSupplied: humanReadableAmount(
+                    totalSupplied,
                     token.reserveConfig.decimals
                 ),
                 totalBorrowed: humanReadableAmount(
@@ -208,8 +211,8 @@ async function borrowableTokens() {
         if (reserveData.totalAToken <= totalBorrowed) {
             results.push({
                 symbol: token.symbol,
-                totalAToken: humanReadableAmount(
-                    reserveData.totalAToken,
+                totalSupplied: humanReadableAmount(
+                    totalSupplied,
                     token.reserveConfig.decimals
                 ),
                 totalBorrowed: humanReadableAmount(
@@ -245,8 +248,8 @@ async function borrowableTokens() {
 
         results.push({
             symbol: token.symbol,
-            totalAToken: humanReadableAmount(
-                reserveData.totalAToken,
+            totalSupplied: humanReadableAmount(
+                totalSupplied,
                 token.reserveConfig.decimals
             ),
             totalBorrowed: humanReadableAmount(
@@ -287,19 +290,20 @@ async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
             .getReserveData(token.tokenAddress)
             .then((data) => reserveDataSchema.parse(data));
 
+        const totalSupplied =
+            reserveData.totalAToken ** reserveData.liquidityIndex / 10n ** 27n;
+
         const totalBorrowed = reserveData.totalVariableDebt;
         // reserveData.totalStableDebt + reserveData.totalVariableDebt;
 
-        const liquidity =
-            (reserveData.totalAToken * reserveData.liquidityIndex) / 10n ** 2n -
-            totalBorrowed;
+        const liquidity = totalSupplied - totalBorrowed;
 
         const withdrawableAmount = liquidity > 0n ? liquidity : 0n;
 
         results.push({
             symbol: token.symbol,
-            totalAToken: humanReadableAmount(
-                reserveData.totalAToken,
+            totalSupplied: humanReadableAmount(
+                totalSupplied,
                 token.reserveConfig.decimals
             ),
             totalBorrowed: humanReadableAmount(
