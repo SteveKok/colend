@@ -287,8 +287,8 @@ async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
             .getReserveData(token.tokenAddress)
             .then((data) => reserveDataSchema.parse(data));
 
-        const totalBorrowed =
-            reserveData.totalStableDebt + reserveData.totalVariableDebt;
+        const totalBorrowed = reserveData.totalVariableDebt;
+        // reserveData.totalStableDebt + reserveData.totalVariableDebt;
 
         const liquidity = reserveData.totalAToken - totalBorrowed;
 
