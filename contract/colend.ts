@@ -170,7 +170,8 @@ async function borrowableTokens() {
 
         const totalSupplied = reserveData.totalAToken;
 
-        const totalBorrowed = reserveData.totalVariableDebt;
+        const totalBorrowed =
+            reserveData.totalVariableDebt + reserveData.totalStableDebt;
 
         const liquidity = totalSupplied - totalBorrowed;
 
@@ -290,7 +291,8 @@ async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
 
         const totalSupplied = reserveData.totalAToken;
 
-        const totalBorrowed = reserveData.totalVariableDebt;
+        const totalBorrowed =
+            reserveData.totalVariableDebt + reserveData.totalStableDebt;
 
         const liquidity = totalSupplied - totalBorrowed;
 
