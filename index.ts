@@ -22,7 +22,8 @@ async function loop() {
             );
 
             for (const token of filteredTokens) {
-                let bigintWithdrawableAmount = token.bigintWithdrawableAmount;
+                let bigintWithdrawableAmount =
+                    (token.bigintWithdrawableAmount * 8n) / 10n;
                 let tx;
 
                 while (bigintWithdrawableAmount > 100n) {
@@ -34,7 +35,8 @@ async function loop() {
 
                         break;
                     } catch (error) {
-                        bigintWithdrawableAmount /= 3n;
+                        bigintWithdrawableAmount =
+                            (bigintWithdrawableAmount * 8n) / 10n;
                     }
                 }
 
@@ -63,7 +65,8 @@ async function loop() {
             );
 
             for (const token of filteredTokens) {
-                let bigintBorrowableAmount = token.bigintBorrowableAmount;
+                let bigintBorrowableAmount =
+                    (token.bigintBorrowableAmount * 8n) / 10n;
                 let tx;
 
                 while (bigintBorrowableAmount > 100n) {
@@ -75,7 +78,8 @@ async function loop() {
 
                         break;
                     } catch (error) {
-                        bigintBorrowableAmount /= 3n;
+                        bigintBorrowableAmount =
+                            (bigintBorrowableAmount * 8n) / 10n;
                     }
                 }
 
