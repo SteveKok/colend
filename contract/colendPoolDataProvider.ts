@@ -202,6 +202,9 @@ async function borrowableTokens(excludedTokenSymbol: string[] = []) {
                     0n,
                     token.reserveConfig.decimals
                 ),
+                address: token.tokenAddress,
+                bigintBorrowableAmount: 0n,
+                decimals: token.reserveConfig.decimals,
                 status: 'Reached borrow cap',
             });
 
@@ -231,6 +234,9 @@ async function borrowableTokens(excludedTokenSymbol: string[] = []) {
                     0n,
                     token.reserveConfig.decimals
                 ),
+                address: token.tokenAddress,
+                bigintBorrowableAmount: 0n,
+                decimals: token.reserveConfig.decimals,
                 status: 'No liquidity',
             });
 
@@ -268,6 +274,9 @@ async function borrowableTokens(excludedTokenSymbol: string[] = []) {
                 borrowableAmount,
                 token.reserveConfig.decimals
             ),
+            address: token.tokenAddress,
+            bigintBorrowableAmount: borrowableAmount,
+            decimals: token.reserveConfig.decimals,
             status: 'Available to borrow',
         });
     }
@@ -317,6 +326,9 @@ async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
                 withdrawableAmount,
                 token.reserveConfig.decimals
             ),
+            address: token.tokenAddress,
+            bigintWithdrawableAmount: withdrawableAmount,
+            decimals: token.reserveConfig.decimals,
             status:
                 withdrawableAmount > 0n
                     ? 'Available to withdraw'
@@ -327,6 +339,13 @@ async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
     return results;
 }
 
-const Colend = { tokenData, init, borrowableTokens, withdrawableTokens };
+const Colend = {
+    colendPoolDataProvider,
+    reserveDataSchema,
+    tokenData,
+    init,
+    borrowableTokens,
+    withdrawableTokens,
+};
 
 export default Colend;

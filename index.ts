@@ -1,9 +1,13 @@
-import { de } from 'zod/v4/locales';
-import Colend from './contract/colend';
+import Colend from './contract/colendPoolDataProvider';
 import Telegram from './output/telegram';
+import { colendPoolProxy } from './contract/colendPoolProxy';
+import { edwardWallets } from './wallet';
 
 await Colend.init();
 await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail']);
+
+const wallet = edwardWallets[0];
+const colendPoolProxyInstance = colendPoolProxy(wallet);
 
 async function loop() {
     try {
@@ -11,6 +15,47 @@ async function loop() {
         const withdrawableTokens = await Colend.withdrawableTokens(['USDT']);
 
         const detectedCommmands = await Telegram.getUpdate();
+
+        if (borrowableTokens.some((t) => t.bigintBorrowableAmount > 0n)) {
+            const filteredTokens = borrowableTokens.filter(
+                (t) => t.bigintBorrowableAmount > 0n
+            );
+
+            for (const token of filteredTokens) {
+                let bigintBorrowableAmount = token.bigintBorrowableAmount;
+                let tx;
+
+                while (bigintBorrowableAmount > 0n) {
+                    try {
+                        tx = await colendPoolProxyInstance.borrow(
+                            token.address,
+                            bigintBorrowableAmount
+                        );
+
+                        break;
+                    } catch (error) {
+                        bigintBorrowableAmount /= 2n;
+                    }
+                }
+
+                if (!tx) {
+                    continue;
+                }
+
+                let message = `🚀 <b>Borrowed ${Telegram.escapeHtml(
+                    token.symbol
+                )}</b>\n`;
+                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                    Number(bigintBorrowableAmount) /
+                        10 ** Number(token.decimals)
+                )}</code>\n\n`;
+                message += `🆔 <b>Transaction Hash:</b> <code>https://scan.coredao.org/tx/${Telegram.escapeHtml(
+                    tx.hash
+                )}</code>\n\n`;
+
+                await Telegram.sendTelegram(message);
+            }
+        }
 
         if (detectedCommmands.includes('/alive')) {
             const message =
@@ -99,23 +144,6 @@ async function loop() {
                 message += `➡️ <b>Withdrawable:</b> <code>${Telegram.escapeHtml(
                     token.withdrawableAmount
                 )}</code>\n\n`;
-            });
-
-            await Telegram.sendTelegram(message);
-        }
-
-        if (borrowableTokens.some((t) => t.status === 'Available to borrow')) {
-            let message =
-                '🔥🔥🔥🔥🔥🔥🔥  <b>Colend Borrowable Amounts Update</b>\n\n';
-
-            borrowableTokens.forEach((token) => {
-                if (token.status === 'Available to borrow') {
-                    message += `💰 <b>${Telegram.escapeHtml(
-                        token.symbol
-                    )} Borrowable:</b> <code>${Telegram.escapeHtml(
-                        token.borrowableAmount
-                    )}</code>\n`;
-                }
             });
 
             await Telegram.sendTelegram(message);

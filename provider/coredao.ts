@@ -7,3 +7,7 @@ export const provider = new ethers.WebSocketProvider(
         staticNetwork: true,
     }
 );
+
+export const jsonRpcProvider = new ethers.JsonRpcProvider(
+    'https://rpc.coredao.org'
+);
