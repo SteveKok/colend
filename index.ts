@@ -2,12 +2,17 @@ import Colend from './contract/colendPoolDataProvider';
 import Telegram from './output/telegram';
 import { colendPoolProxy } from './contract/colendPoolProxy';
 import { edwardWallets } from './wallet';
+import { steveWallets } from './wallet';
 
 await Colend.init();
 await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail']);
 
-const wallet = edwardWallets[0];
-const colendPoolProxyInstance = colendPoolProxy(wallet);
+const edwardColendPoolProxyInstances = edwardWallets.map((wallet) =>
+    colendPoolProxy(wallet)
+);
+const allColendPoolProxyInstances = [...edwardWallets, ...steveWallets].map(
+    (wallet) => colendPoolProxy(wallet)
+);
 
 async function loop() {
     try {
@@ -21,48 +26,50 @@ async function loop() {
                 (t) => t.bigintWithdrawableAmount > 0n
             );
 
-            for (const token of filteredTokens) {
-                let bigintWithdrawableAmount =
-                    (token.bigintWithdrawableAmount * 8n) / 10n;
-                let tx;
+            for (const colendPoolProxyInstance of allColendPoolProxyInstances) {
+                for (const token of filteredTokens) {
+                    let bigintWithdrawableAmount =
+                        (token.bigintWithdrawableAmount * 8n) / 10n;
+                    let tx;
 
-                while (bigintWithdrawableAmount > 10000n) {
-                    try {
-                        Telegram.sendTelegram(
-                            `Attempting to withdraw ${
-                                Number(bigintWithdrawableAmount) /
-                                10 ** Number(token.decimals)
-                            } ${token.symbol}...`
-                        );
+                    while (bigintWithdrawableAmount > 10000n) {
+                        try {
+                            Telegram.sendTelegram(
+                                `Attempting to withdraw ${
+                                    Number(bigintWithdrawableAmount) /
+                                    10 ** Number(token.decimals)
+                                } ${token.symbol}...`
+                            );
 
-                        tx = await colendPoolProxyInstance.withdraw(
-                            token.address,
-                            bigintWithdrawableAmount
-                        );
+                            tx = await colendPoolProxyInstance.withdraw(
+                                token.address,
+                                bigintWithdrawableAmount
+                            );
 
-                        break;
-                    } catch (error) {
-                        bigintWithdrawableAmount =
-                            (bigintWithdrawableAmount * 8n) / 10n;
+                            break;
+                        } catch (error) {
+                            bigintWithdrawableAmount =
+                                (bigintWithdrawableAmount * 8n) / 10n;
+                        }
                     }
+
+                    if (!tx) {
+                        continue;
+                    }
+
+                    let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Withdrawn ${Telegram.escapeHtml(
+                        token.symbol
+                    )}</b>\n`;
+                    message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                        Number(bigintWithdrawableAmount) /
+                            10 ** Number(token.decimals)
+                    )}</code>\n\n`;
+                    message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
+                        tx.hash
+                    )}\n\n`;
+
+                    Telegram.sendTelegram(message);
                 }
-
-                if (!tx) {
-                    continue;
-                }
-
-                let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Withdrawn ${Telegram.escapeHtml(
-                    token.symbol
-                )}</b>\n`;
-                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-                    Number(bigintWithdrawableAmount) /
-                        10 ** Number(token.decimals)
-                )}</code>\n\n`;
-                message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
-                    tx.hash
-                )}\n\n`;
-
-                Telegram.sendTelegram(message);
             }
         }
 
@@ -71,48 +78,50 @@ async function loop() {
                 (t) => t.bigintBorrowableAmount > 0n
             );
 
-            for (const token of filteredTokens) {
-                let bigintBorrowableAmount =
-                    (token.bigintBorrowableAmount * 8n) / 10n;
-                let tx;
+            for (const colendPoolProxyInstance of edwardColendPoolProxyInstances) {
+                for (const token of filteredTokens) {
+                    let bigintBorrowableAmount =
+                        (token.bigintBorrowableAmount * 8n) / 10n;
+                    let tx;
 
-                while (bigintBorrowableAmount > 10000n) {
-                    try {
-                        Telegram.sendTelegram(
-                            `Attempting to borrow ${
-                                Number(bigintBorrowableAmount) /
-                                10 ** Number(token.decimals)
-                            } ${token.symbol}...`
-                        );
+                    while (bigintBorrowableAmount > 10000n) {
+                        try {
+                            Telegram.sendTelegram(
+                                `Attempting to borrow ${
+                                    Number(bigintBorrowableAmount) /
+                                    10 ** Number(token.decimals)
+                                } ${token.symbol}...`
+                            );
 
-                        tx = await colendPoolProxyInstance.borrow(
-                            token.address,
-                            bigintBorrowableAmount
-                        );
+                            tx = await colendPoolProxyInstance.borrow(
+                                token.address,
+                                bigintBorrowableAmount
+                            );
 
-                        break;
-                    } catch (error) {
-                        bigintBorrowableAmount =
-                            (bigintBorrowableAmount * 8n) / 10n;
+                            break;
+                        } catch (error) {
+                            bigintBorrowableAmount =
+                                (bigintBorrowableAmount * 8n) / 10n;
+                        }
                     }
+
+                    if (!tx) {
+                        continue;
+                    }
+
+                    let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Borrowed ${Telegram.escapeHtml(
+                        token.symbol
+                    )}</b>\n`;
+                    message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                        Number(bigintBorrowableAmount) /
+                            10 ** Number(token.decimals)
+                    )}</code>\n\n`;
+                    message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
+                        tx.hash
+                    )}\n\n`;
+
+                    Telegram.sendTelegram(message);
                 }
-
-                if (!tx) {
-                    continue;
-                }
-
-                let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Borrowed ${Telegram.escapeHtml(
-                    token.symbol
-                )}</b>\n`;
-                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-                    Number(bigintBorrowableAmount) /
-                        10 ** Number(token.decimals)
-                )}</code>\n\n`;
-                message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
-                    tx.hash
-                )}\n\n`;
-
-                Telegram.sendTelegram(message);
             }
         }
 
