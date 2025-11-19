@@ -28,6 +28,13 @@ async function loop() {
 
                 while (bigintWithdrawableAmount > 100n) {
                     try {
+                        Telegram.sendTelegram(
+                            `Attempting to withdraw ${
+                                Number(bigintWithdrawableAmount) /
+                                10 ** Number(token.decimals)
+                            } ${token.symbol}...`
+                        );
+
                         tx = await colendPoolProxyInstance.withdraw(
                             token.address,
                             bigintWithdrawableAmount
@@ -71,6 +78,13 @@ async function loop() {
 
                 while (bigintBorrowableAmount > 100n) {
                     try {
+                        Telegram.sendTelegram(
+                            `Attempting to borrow ${
+                                Number(bigintBorrowableAmount) /
+                                10 ** Number(token.decimals)
+                            } ${token.symbol}...`
+                        );
+
                         tx = await colendPoolProxyInstance.borrow(
                             token.address,
                             bigintBorrowableAmount
