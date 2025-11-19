@@ -3,6 +3,8 @@ import Telegram from './output/telegram';
 import { colendPoolProxy } from './contract/colendPoolProxy';
 import { edwardWallets } from './wallet';
 import { steveWallets } from './wallet';
+import { getAsset } from 'node:sea';
+import { getAssetPrice } from './contract/colendOracle';
 
 await Colend.init();
 await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail']);
@@ -26,13 +28,20 @@ async function loop() {
                 (t) => t.bigintWithdrawableAmount > 0n
             );
 
-            for (const colendPoolProxyInstance of allColendPoolProxyInstances) {
-                for (const token of filteredTokens) {
+            for (const token of filteredTokens) {
+                const tokenPrice = await getAssetPrice(token.address);
+
+                for (const colendPoolProxyInstance of allColendPoolProxyInstances) {
                     let bigintWithdrawableAmount =
                         (token.bigintWithdrawableAmount * 8n) / 10n;
                     let tx;
 
-                    while (bigintWithdrawableAmount > 10000n) {
+                    while (
+                        (Number(bigintWithdrawableAmount) /
+                            10 ** Number(token.decimals)) *
+                            tokenPrice >
+                        10
+                    ) {
                         try {
                             tx = await colendPoolProxyInstance.withdraw(
                                 token.address,
@@ -77,13 +86,20 @@ async function loop() {
                 (t) => t.bigintBorrowableAmount > 0n
             );
 
-            for (const colendPoolProxyInstance of edwardColendPoolProxyInstances) {
-                for (const token of filteredTokens) {
+            for (const token of filteredTokens) {
+                const tokenPrice = await getAssetPrice(token.address);
+
+                for (const colendPoolProxyInstance of edwardColendPoolProxyInstances) {
                     let bigintBorrowableAmount =
                         (token.bigintBorrowableAmount * 8n) / 10n;
                     let tx;
 
-                    while (bigintBorrowableAmount > 10000n) {
+                    while (
+                        (Number(bigintBorrowableAmount) /
+                            10 ** Number(token.decimals)) *
+                            tokenPrice >
+                        10
+                    ) {
                         try {
                             tx = await colendPoolProxyInstance.borrow(
                                 token.address,
