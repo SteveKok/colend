@@ -65,10 +65,7 @@ async function loop() {
                     )}</code>\n\n`;
                     message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
                         tx.hash
-                    )}\n`;
-                    message += `✅ <b>Status:</b> ${
-                        txReceipt.status === 1 ? 'Success' : 'Failed'
-                    }\n\n`;
+                    )}\n\n`;
 
                     Telegram.sendTelegram(message);
                 }
@@ -119,10 +116,7 @@ async function loop() {
                     )}</code>\n\n`;
                     message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
                         tx.hash
-                    )}\n`;
-                    message += `✅ <b>Status:</b> ${
-                        txReceipt.status === 1 ? 'Success' : 'Failed'
-                    }\n\n`;
+                    )}\n\n`;
 
                     Telegram.sendTelegram(message);
                 }
