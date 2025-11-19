@@ -57,6 +57,8 @@ async function loop() {
                         continue;
                     }
 
+                    const txReceipt = await tx.wait();
+
                     let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Withdrawn ${Telegram.escapeHtml(
                         token.symbol
                     )}</b>\n`;
@@ -66,7 +68,10 @@ async function loop() {
                     )}</code>\n\n`;
                     message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
                         tx.hash
-                    )}\n\n`;
+                    )}\n`;
+                    message += `✅ <b>Status:</b> ${
+                        txReceipt.status === 1 ? 'Success' : 'Failed'
+                    }\n\n`;
 
                     Telegram.sendTelegram(message);
                 }
@@ -109,6 +114,8 @@ async function loop() {
                         continue;
                     }
 
+                    const txReceipt = await tx.wait();
+
                     let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Borrowed ${Telegram.escapeHtml(
                         token.symbol
                     )}</b>\n`;
@@ -118,7 +125,10 @@ async function loop() {
                     )}</code>\n\n`;
                     message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
                         tx.hash
-                    )}\n\n`;
+                    )}\n`;
+                    message += `✅ <b>Status:</b> ${
+                        txReceipt.status === 1 ? 'Success' : 'Failed'
+                    }\n\n`;
 
                     Telegram.sendTelegram(message);
                 }
