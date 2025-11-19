@@ -53,7 +53,7 @@ async function loop() {
                     tx.hash
                 )}</code>\n\n`;
 
-                await Telegram.sendTelegram(message);
+                Telegram.sendTelegram(message);
             }
         }
 
@@ -94,14 +94,14 @@ async function loop() {
                     tx.hash
                 )}</code>\n\n`;
 
-                await Telegram.sendTelegram(message);
+                Telegram.sendTelegram(message);
             }
         }
 
         if (detectedCommmands.includes('/alive')) {
             const message =
                 'No worry, I am still alive and working properly...';
-            await Telegram.sendTelegram(message);
+            Telegram.sendTelegram(message);
         }
 
         if (detectedCommmands.includes('/menu')) {
@@ -117,7 +117,7 @@ async function loop() {
             message +=
                 'If borrowableTokens or withdrawableTokens are detected, bot will send updates automatically.';
 
-            await Telegram.sendTelegram(message);
+            Telegram.sendTelegram(message);
         }
 
         if (detectedCommmands.includes('/summary')) {
@@ -141,7 +141,7 @@ async function loop() {
                 )}</code>\n`;
             });
 
-            await Telegram.sendTelegram(message);
+            Telegram.sendTelegram(message);
         }
 
         if (detectedCommmands.includes('/fullDetail')) {
@@ -187,7 +187,7 @@ async function loop() {
                 )}</code>\n\n`;
             });
 
-            await Telegram.sendTelegram(message);
+            Telegram.sendTelegram(message);
         }
     } catch (error) {
         console.error('Error in main loop:', error);
