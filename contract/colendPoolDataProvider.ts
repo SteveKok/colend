@@ -6,6 +6,7 @@ const colendPoolDataProvider = new ethers.Contract(
     '0x567af83d912c85c7a66d093e41d92676fa9076e3',
     [
         'function getAllReservesTokens() view returns (tuple(string symbol, address tokenAddress)[])',
+        'function getAllATokens() view returns (tuple(string symbol, address tokenAddress)[])',
         'function getReserveCaps(address asset) view returns (uint256 borrowCap, uint256 supplyCap)',
         'function getReserveConfigurationData(address asset) view returns (uint256 decimals, uint256 ltv, uint256 liquidationThreshold, uint256 liquidationBonus, uint256 reserveFactor, bool usageAsCollateralEnabled, bool borrowingEnabled, bool stableBorrowRateEnabled, bool isActive, bool isFrozen)',
         'function getReserveData(address asset) view returns (uint256 unbacked, uint256 accruedToTreasuryScaled, uint256 totalAToken, uint256 totalStableDebt, uint256 totalVariableDebt, uint256 liquidityRate, uint256 variableBorrowRate, uint256 stableBorrowRate, uint256 averageStableBorrowRate, uint256 liquidityIndex, uint256 variableBorrowIndex, uint40 lastUpdateTimestamp)',
@@ -13,7 +14,25 @@ const colendPoolDataProvider = new ethers.Contract(
     provider
 );
 
-const allReservesTokensSchema = z.array(
+const reserveTokenLiquidityChecker = (
+    reserveTokenAddress: string,
+    aTokenAddress: string
+) => {
+    const aToken = new ethers.Contract(
+        aTokenAddress,
+        ['function balanceOf(address account) view returns (uint256)'],
+        provider
+    );
+
+    async function getLiquidity() {
+        const balance: bigint = await aToken.balanceOf(reserveTokenAddress);
+        return balance;
+    }
+
+    return getLiquidity;
+};
+
+const allTokensSchema = z.array(
     z.tuple([
         z.string(),
         z.string().refine((addr) => ethers.isAddress(addr), {
@@ -119,6 +138,7 @@ type TokenData = {
     reserveCap: z.infer<typeof reserveCapsSchema>;
     reserveConfig: z.infer<typeof reserveConfigurationDataSchema>;
     borrowCap: bigint;
+    getLiquidity: () => Promise<bigint>;
 };
 
 const tokenData: TokenData[] = [];
@@ -126,9 +146,13 @@ const tokenData: TokenData[] = [];
 async function init() {
     const tokens = await colendPoolDataProvider
         .getAllReservesTokens()
-        .then((tokens) => allReservesTokensSchema.parse(tokens));
+        .then((tokens) => allTokensSchema.parse(tokens));
 
-    for (const [symbol, tokenAddress] of tokens) {
+    const aTokens = await colendPoolDataProvider
+        .getAllATokens()
+        .then((tokens) => allTokensSchema.parse(tokens));
+
+    for (const [index, [symbol, tokenAddress]] of tokens.entries()) {
         const reserveCap = await colendPoolDataProvider
             .getReserveCaps(tokenAddress)
             .then((data) => reserveCapsSchema.parse(data));
@@ -139,12 +163,18 @@ async function init() {
 
         const borrowCap = reserveCap.borrowCap * 10n ** reserveConfig.decimals;
 
+        const [, aTokenAddress] = aTokens[index];
+
         tokenData.push({
             symbol,
             tokenAddress,
             reserveCap,
             reserveConfig,
             borrowCap,
+            getLiquidity: reserveTokenLiquidityChecker(
+                tokenAddress,
+                aTokenAddress
+            ),
         });
     }
 }
@@ -174,7 +204,7 @@ async function borrowableTokens(excludedTokenSymbol: string[] = []) {
         const totalBorrowed =
             reserveData.totalVariableDebt + reserveData.totalStableDebt;
 
-        const liquidity = totalSupplied - totalBorrowed;
+        const liquidity = await token.getLiquidity();
 
         if (
             totalBorrowed >=
@@ -304,7 +334,7 @@ async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
         const totalBorrowed =
             reserveData.totalVariableDebt + reserveData.totalStableDebt;
 
-        const liquidity = totalSupplied - totalBorrowed;
+        const liquidity = await token.getLiquidity();
 
         const withdrawableAmount = liquidity > 0n ? liquidity : 0n;
 
