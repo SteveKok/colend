@@ -26,7 +26,7 @@ async function loop() {
                     (token.bigintWithdrawableAmount * 8n) / 10n;
                 let tx;
 
-                while (bigintWithdrawableAmount > 100n) {
+                while (bigintWithdrawableAmount > 10000n) {
                     try {
                         Telegram.sendTelegram(
                             `Attempting to withdraw ${
@@ -58,9 +58,9 @@ async function loop() {
                     Number(bigintWithdrawableAmount) /
                         10 ** Number(token.decimals)
                 )}</code>\n\n`;
-                message += `🆔 <b>Transaction Hash:</b> <code>https://scan.coredao.org/tx/${Telegram.escapeHtml(
+                message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
                     tx.hash
-                )}</code>\n\n`;
+                )}\n\n`;
 
                 Telegram.sendTelegram(message);
             }
@@ -76,7 +76,7 @@ async function loop() {
                     (token.bigintBorrowableAmount * 8n) / 10n;
                 let tx;
 
-                while (bigintBorrowableAmount > 100n) {
+                while (bigintBorrowableAmount > 10000n) {
                     try {
                         Telegram.sendTelegram(
                             `Attempting to borrow ${
@@ -108,9 +108,9 @@ async function loop() {
                     Number(bigintBorrowableAmount) /
                         10 ** Number(token.decimals)
                 )}</code>\n\n`;
-                message += `🆔 <b>Transaction Hash:</b> <code>https://scan.coredao.org/tx/${Telegram.escapeHtml(
+                message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
                     tx.hash
-                )}</code>\n\n`;
+                )}\n\n`;
 
                 Telegram.sendTelegram(message);
             }
