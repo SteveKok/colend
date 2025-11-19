@@ -187,7 +187,10 @@ async function loop() {
 
         if (detectedCommmands.includes('/fullDetail')) {
             let message = '📋 <b>Colend Full Details</b>\n\n';
-            borrowableTokens.forEach((token) => {
+
+            for (const token of borrowableTokens) {
+                const tokenPrice = await getAssetPrice(token.address);
+
                 message += `💰 <b>${Telegram.escapeHtml(token.symbol)}</b>\n`;
                 message += `• Total Supplied: <code>${Telegram.escapeHtml(
                     token.totalSupplied
@@ -206,10 +209,15 @@ async function loop() {
                 )}</b>\n`;
                 message += `➡️ <b>Borrowable:</b> <code>${Telegram.escapeHtml(
                     token.borrowableAmount
-                )}</code>\n\n`;
-            });
+                )}</code>\n`;
 
-            withdrawableTokens.forEach((token) => {
+                message += `• Price: <code>${Telegram.escapeHtml(
+                    tokenPrice.toString()
+                )} USD</code>\n\n`;
+            }
+
+            for (const token of withdrawableTokens) {
+                const tokenPrice = await getAssetPrice(token.address);
                 message += ` 🏧 <b>${Telegram.escapeHtml(token.symbol)}</b>\n`;
                 message += `• Total Supplied: <code>${Telegram.escapeHtml(
                     token.totalSupplied
@@ -225,8 +233,11 @@ async function loop() {
                 )}</b>\n`;
                 message += `➡️ <b>Withdrawable:</b> <code>${Telegram.escapeHtml(
                     token.withdrawableAmount
-                )}</code>\n\n`;
-            });
+                )}</code>\n`;
+                message += `• Price: <code>${Telegram.escapeHtml(
+                    tokenPrice.toString()
+                )} USD</code>\n\n`;
+            }
 
             Telegram.sendTelegram(message);
         }
