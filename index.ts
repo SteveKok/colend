@@ -204,16 +204,15 @@ async function loop() {
                 message += `• Liquidity: <code>${Telegram.escapeHtml(
                     token.liquidity
                 )}</code>\n`;
+                message += `• Price: <code>${Telegram.escapeHtml(
+                    tokenPrice.toString()
+                )} USD</code>\n`;
                 message += `• Status: <b>${Telegram.escapeHtml(
                     token.status
                 )}</b>\n`;
                 message += `➡️ <b>Borrowable:</b> <code>${Telegram.escapeHtml(
                     token.borrowableAmount
-                )}</code>\n`;
-
-                message += `• Price: <code>${Telegram.escapeHtml(
-                    tokenPrice.toString()
-                )} USD</code>\n\n`;
+                )}</code>\n\n`;
             }
 
             for (const token of withdrawableTokens) {
@@ -229,15 +228,15 @@ async function loop() {
                 message += `• Liquidity: <code>${Telegram.escapeHtml(
                     token.liquidity
                 )}</code>\n`;
+                message += `• Price: <code>${Telegram.escapeHtml(
+                    tokenPrice.toString()
+                )} USD</code>\n`;
                 message += `• Status: <b>${Telegram.escapeHtml(
                     token.status
                 )}</b>\n`;
                 message += `➡️ <b>Withdrawable:</b> <code>${Telegram.escapeHtml(
                     token.withdrawableAmount
-                )}</code>\n`;
-                message += `• Price: <code>${Telegram.escapeHtml(
-                    tokenPrice.toString()
-                )} USD</code>\n\n`;
+                )}</code>\n\n`;
             }
 
             Telegram.sendTelegram(message);
