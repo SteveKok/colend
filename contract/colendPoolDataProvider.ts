@@ -18,14 +18,14 @@ const reserveTokenLiquidityChecker = (
     reserveTokenAddress: string,
     aTokenAddress: string
 ) => {
-    const aToken = new ethers.Contract(
-        aTokenAddress,
+    const reserveToken = new ethers.Contract(
+        reserveTokenAddress,
         ['function balanceOf(address account) view returns (uint256)'],
         provider
     );
 
     async function getLiquidity() {
-        const balance: bigint = await aToken.balanceOf(reserveTokenAddress);
+        const balance: bigint = await reserveToken.balanceOf(aTokenAddress);
         return balance;
     }
 
