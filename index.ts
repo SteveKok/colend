@@ -25,7 +25,7 @@ async function loop() {
                 let bigintBorrowableAmount = token.bigintBorrowableAmount;
                 let tx;
 
-                while (bigintBorrowableAmount > 0n) {
+                while (bigintBorrowableAmount > 100n) {
                     try {
                         tx = await colendPoolProxyInstance.borrow(
                             token.address,
