@@ -340,8 +340,6 @@ async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
 }
 
 const Colend = {
-    colendPoolDataProvider,
-    reserveDataSchema,
     tokenData,
     init,
     borrowableTokens,

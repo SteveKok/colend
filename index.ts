@@ -16,6 +16,47 @@ async function loop() {
 
         const detectedCommmands = await Telegram.getUpdate();
 
+        if (withdrawableTokens.some((t) => t.bigintWithdrawableAmount > 0n)) {
+            const filteredTokens = withdrawableTokens.filter(
+                (t) => t.bigintWithdrawableAmount > 0n
+            );
+
+            for (const token of filteredTokens) {
+                let bigintWithdrawableAmount = token.bigintWithdrawableAmount;
+                let tx;
+
+                while (bigintWithdrawableAmount > 100n) {
+                    try {
+                        tx = await colendPoolProxyInstance.withdraw(
+                            token.address,
+                            bigintWithdrawableAmount
+                        );
+
+                        break;
+                    } catch (error) {
+                        bigintWithdrawableAmount /= 3n;
+                    }
+                }
+
+                if (!tx) {
+                    continue;
+                }
+
+                let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Withdrawn ${Telegram.escapeHtml(
+                    token.symbol
+                )}</b>\n`;
+                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                    Number(bigintWithdrawableAmount) /
+                        10 ** Number(token.decimals)
+                )}</code>\n\n`;
+                message += `🆔 <b>Transaction Hash:</b> <code>https://scan.coredao.org/tx/${Telegram.escapeHtml(
+                    tx.hash
+                )}</code>\n\n`;
+
+                await Telegram.sendTelegram(message);
+            }
+        }
+
         if (borrowableTokens.some((t) => t.bigintBorrowableAmount > 0n)) {
             const filteredTokens = borrowableTokens.filter(
                 (t) => t.bigintBorrowableAmount > 0n
@@ -144,26 +185,6 @@ async function loop() {
                 message += `➡️ <b>Withdrawable:</b> <code>${Telegram.escapeHtml(
                     token.withdrawableAmount
                 )}</code>\n\n`;
-            });
-
-            await Telegram.sendTelegram(message);
-        }
-
-        if (
-            withdrawableTokens.some((t) => t.status === 'Available to withdraw')
-        ) {
-            let message =
-                '🔥🔥🔥🔥🔥🔥🔥 <b>Colend Withdrawable Amounts Update</b>\n\n';
-
-            withdrawableTokens.forEach((token) => {
-                if (token.status === 'Available to withdraw') {
-                    message += `🏧 <b>${Telegram.escapeHtml(
-                        token.symbol
-                    )}</b>\n`;
-                    message += `➡️ <b>Withdrawable:</b> <code>${Telegram.escapeHtml(
-                        token.withdrawableAmount
-                    )}</code>\n\n`;
-                }
             });
 
             await Telegram.sendTelegram(message);
