@@ -42,7 +42,7 @@ async function loop() {
                     continue;
                 }
 
-                let message = `🚀 <b>Borrowed ${Telegram.escapeHtml(
+                let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Borrowed ${Telegram.escapeHtml(
                     token.symbol
                 )}</b>\n`;
                 message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
