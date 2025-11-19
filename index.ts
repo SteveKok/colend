@@ -7,7 +7,7 @@ await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail']);
 
 async function loop() {
     try {
-        const borrowableTokens = await Colend.borrowableTokens();
+        const borrowableTokens = await Colend.borrowableTokens(['USDT']);
         const withdrawableTokens = await Colend.withdrawableTokens(['USDT']);
 
         const detectedCommmands = await Telegram.getUpdate();

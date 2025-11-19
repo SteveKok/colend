@@ -153,12 +153,13 @@ function humanReadableAmount(amount: bigint, decimals: bigint): string {
     return (Number(amount) / 10 ** Number(decimals)).toString();
 }
 
-async function borrowableTokens() {
+async function borrowableTokens(excludedTokenSymbol: string[] = []) {
     const borrowable = tokenData.filter(
         (token) =>
             token.reserveConfig.borrowingEnabled &&
             token.reserveConfig.isActive &&
-            !token.reserveConfig.isFrozen
+            !token.reserveConfig.isFrozen &&
+            !excludedTokenSymbol.includes(token.symbol)
     );
 
     const results = [];
