@@ -34,13 +34,6 @@ async function loop() {
 
                     while (bigintWithdrawableAmount > 10000n) {
                         try {
-                            Telegram.sendTelegram(
-                                `Attempting to withdraw ${
-                                    Number(bigintWithdrawableAmount) /
-                                    10 ** Number(token.decimals)
-                                } ${token.symbol}...`
-                            );
-
                             tx = await colendPoolProxyInstance.withdraw(
                                 token.address,
                                 bigintWithdrawableAmount
@@ -58,6 +51,10 @@ async function loop() {
                     }
 
                     const txReceipt = await tx.wait();
+
+                    if (txReceipt.status !== 1) {
+                        continue;
+                    }
 
                     let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Withdrawn ${Telegram.escapeHtml(
                         token.symbol
@@ -91,13 +88,6 @@ async function loop() {
 
                     while (bigintBorrowableAmount > 10000n) {
                         try {
-                            Telegram.sendTelegram(
-                                `Attempting to borrow ${
-                                    Number(bigintBorrowableAmount) /
-                                    10 ** Number(token.decimals)
-                                } ${token.symbol}...`
-                            );
-
                             tx = await colendPoolProxyInstance.borrow(
                                 token.address,
                                 bigintBorrowableAmount
@@ -115,6 +105,10 @@ async function loop() {
                     }
 
                     const txReceipt = await tx.wait();
+
+                    if (txReceipt.status !== 1) {
+                        continue;
+                    }
 
                     let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Borrowed ${Telegram.escapeHtml(
                         token.symbol
