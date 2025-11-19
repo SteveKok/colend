@@ -218,6 +218,7 @@ async function loop() {
 
             for (const token of withdrawableTokens) {
                 const tokenPrice = await getAssetPrice(token.address);
+
                 message += ` 🏧 <b>${Telegram.escapeHtml(token.symbol)}</b>\n`;
                 message += `• Total Supplied: <code>${Telegram.escapeHtml(
                     token.totalSupplied

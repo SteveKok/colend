@@ -8,9 +8,7 @@ const colendOracle = new ethers.Contract(
     provider
 );
 
-const assetPriceSchema = z
-    .tuple([z.bigint()])
-    .transform(([price]) => Number(price) / 1e8);
+const assetPriceSchema = z.bigint().transform((price) => Number(price) / 1e8);
 
 export async function getAssetPrice(tokenAddress: string) {
     const result = await colendOracle.getAssetPrice(tokenAddress);
