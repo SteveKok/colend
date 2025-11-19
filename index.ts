@@ -34,7 +34,7 @@ async function loop() {
 
                         break;
                     } catch (error) {
-                        bigintBorrowableAmount /= 2n;
+                        bigintBorrowableAmount /= 3n;
                     }
                 }
 
