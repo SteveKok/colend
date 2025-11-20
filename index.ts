@@ -72,6 +72,11 @@ async function loop() {
                         Number(bigintWithdrawableAmount) /
                             10 ** Number(token.decimals)
                     )}</code>\n\n`;
+                    message += `• Worth: <code>${Telegram.escapeHtml(
+                        (Number(bigintWithdrawableAmount) /
+                            10 ** Number(token.decimals)) *
+                            tokenPrice
+                    )} USD</code>\n`;
                     message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
                         tx.hash
                     )}\n\n`;
@@ -130,6 +135,11 @@ async function loop() {
                         Number(bigintBorrowableAmount) /
                             10 ** Number(token.decimals)
                     )}</code>\n\n`;
+                    message += `• Worth: <code>${Telegram.escapeHtml(
+                        (Number(bigintBorrowableAmount) /
+                            10 ** Number(token.decimals)) *
+                            tokenPrice
+                    )} USD</code>\n`;
                     message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
                         tx.hash
                     )}\n\n`;
