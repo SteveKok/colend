@@ -33,7 +33,7 @@ async function loop() {
 
                 for (const colendPoolProxyInstance of allColendPoolProxyInstances) {
                     let bigintWithdrawableAmount =
-                        (token.bigintWithdrawableAmount * 8n) / 10n;
+                        (token.bigintWithdrawableAmount * 98n) / 100n;
                     let tx;
 
                     while (
@@ -91,7 +91,7 @@ async function loop() {
 
                 for (const colendPoolProxyInstance of edwardColendPoolProxyInstances) {
                     let bigintBorrowableAmount =
-                        (token.bigintBorrowableAmount * 8n) / 10n;
+                        (token.bigintBorrowableAmount * 98n) / 100n;
                     let tx;
 
                     while (
