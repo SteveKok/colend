@@ -71,12 +71,12 @@ async function loop() {
                     message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                         Number(bigintWithdrawableAmount) /
                             10 ** Number(token.decimals)
-                    )}</code>\n\n`;
-                    message += `• Worth: <code>${Telegram.escapeHtml(
+                    )}</code>\n`;
+                    message += `💰 Worth: <code>${Telegram.escapeHtml(
                         (Number(bigintWithdrawableAmount) /
                             10 ** Number(token.decimals)) *
                             tokenPrice
-                    )} USD</code>\n`;
+                    )} USD</code>\n\n`;
                     message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
                         tx.hash
                     )}\n\n`;
@@ -134,12 +134,12 @@ async function loop() {
                     message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                         Number(bigintBorrowableAmount) /
                             10 ** Number(token.decimals)
-                    )}</code>\n\n`;
-                    message += `• Worth: <code>${Telegram.escapeHtml(
+                    )}</code>\n`;
+                    message += `💰 Worth: <code>${Telegram.escapeHtml(
                         (Number(bigintBorrowableAmount) /
                             10 ** Number(token.decimals)) *
                             tokenPrice
-                    )} USD</code>\n`;
+                    )} USD</code>\n\n`;
                     message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
                         tx.hash
                     )}\n\n`;
