@@ -5,15 +5,21 @@ import { edwardWallets } from './wallet';
 import { steveWallets } from './wallet';
 import { getAsset } from 'node:sea';
 import { getAssetPrice } from './contract/colendOracle';
+import { erc20 } from './contract/erc20';
 
 await Colend.init();
 await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail']);
 
-const edwardColendPoolProxyInstances = edwardWallets.map((wallet) =>
-    colendPoolProxy(wallet)
-);
+const edwardColendPoolProxyInstances = edwardWallets.map((wallet) => ({
+    name: wallet.name,
+    proxy: colendPoolProxy(wallet.wallet),
+}));
+
 const allColendPoolProxyInstances = [...edwardWallets, ...steveWallets].map(
-    (wallet) => colendPoolProxy(wallet)
+    (wallet) => ({
+        name: wallet.name,
+        proxy: colendPoolProxy(wallet.wallet),
+    })
 );
 
 async function loop() {
@@ -43,7 +49,7 @@ async function loop() {
                         10
                     ) {
                         try {
-                            tx = await colendPoolProxyInstance.withdraw(
+                            tx = await colendPoolProxyInstance.proxy.withdraw(
                                 token.address,
                                 bigintWithdrawableAmount
                             );
@@ -68,6 +74,9 @@ async function loop() {
                     let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Withdrawn ${Telegram.escapeHtml(
                         token.symbol
                     )}</b>\n`;
+                    message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
+                        colendPoolProxyInstance.name
+                    )}</code>\n`;
                     message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                         Number(bigintWithdrawableAmount) /
                             10 ** Number(token.decimals)
@@ -106,7 +115,7 @@ async function loop() {
                         10
                     ) {
                         try {
-                            tx = await colendPoolProxyInstance.borrow(
+                            tx = await colendPoolProxyInstance.proxy.borrow(
                                 token.address,
                                 bigintBorrowableAmount
                             );
@@ -131,6 +140,9 @@ async function loop() {
                     let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Borrowed ${Telegram.escapeHtml(
                         token.symbol
                     )}</b>\n`;
+                    message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
+                        colendPoolProxyInstance.name
+                    )}</code>\n`;
                     message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                         Number(bigintBorrowableAmount) /
                             10 ** Number(token.decimals)
@@ -149,6 +161,33 @@ async function loop() {
             }
         }
 
+        if (detectedCommmands.includes('/collect')) {
+            const tokens = [...borrowableTokens, ...withdrawableTokens];
+
+            for (const token of tokens) {
+                for (const wallet of edwardWallets) {
+                    const erc20Instance = erc20(token.address, wallet.wallet);
+                    const transferedBalance =
+                        await erc20Instance.transferToSummary();
+
+                    if (transferedBalance > 0n) {
+                        let message = `📥 <b>Transferred ${Telegram.escapeHtml(
+                            token.symbol
+                        )} to Summary Wallet</b>\n`;
+                        message += `💳 <b>From Account:</b> <code>${Telegram.escapeHtml(
+                            wallet.name
+                        )}</code>\n`;
+                        message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                            Number(transferedBalance) /
+                                10 ** Number(token.decimals)
+                        )}</code>\n\n`;
+
+                        Telegram.sendTelegram(message);
+                    }
+                }
+            }
+        }
+
         if (detectedCommmands.includes('/alive')) {
             const message =
                 'No worry, I am still alive and working properly...';
@@ -160,6 +199,8 @@ async function loop() {
 
             message += 'Available commands:\n';
             message += '/alive - Check if bot is alive\n';
+            message +=
+                '/collect - Transfer all borrowed tokens to summary wallet\n';
             message += '/menu - Show this menu\n';
             message +=
                 '/summary - Show summary of borrowable and withdrawable amounts\n';
