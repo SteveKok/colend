@@ -8,7 +8,7 @@ import { getAssetPrice } from './contract/colendOracle';
 import { erc20 } from './contract/erc20';
 
 await Colend.init();
-await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail']);
+await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail', '/collect']);
 
 const edwardColendPoolProxyInstances = edwardWallets.map((wallet) => ({
     name: wallet.name,
