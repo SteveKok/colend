@@ -171,7 +171,7 @@ async function loop() {
                 while (amountToTransfer > 10n * 10n ** token.decimals) {
                     try {
                         tx = await erc20Instance.transferTo(
-                            edwardWallets[3].wallet.address,
+                            edwardWallets[2].wallet.address,
                             amountToTransfer
                         );
 
@@ -187,6 +187,8 @@ async function loop() {
 
                 const txReceipt = await tx.wait();
 
+                console.log(txReceipt);
+
                 if (txReceipt.status !== 1) {
                     continue;
                 }
@@ -196,7 +198,7 @@ async function loop() {
                     wallet.name
                 )}</code>\n`;
                 message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
-                    edwardWallets[3].wallet.address
+                    edwardWallets[2].wallet.address
                 )}</code>\n`;
                 message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                     Number(amountToTransfer) / 10 ** Number(token.decimals)
