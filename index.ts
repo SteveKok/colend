@@ -177,7 +177,7 @@ async function loop() {
 
                         break;
                     } catch (error) {
-                        amountToTransfer = (amountToTransfer * 8n) / 10n;
+                        amountToTransfer = (amountToTransfer * 7n) / 10n;
                     }
                 }
 
