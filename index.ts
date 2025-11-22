@@ -191,9 +191,7 @@ async function loop() {
                     continue;
                 }
 
-                let message = `📤 <b>Transferred ${Telegram.escapeHtml(
-                    token.symbol
-                )}</b>\n`;
+                let message = `📤 <b>Transferred aUSDT</b>\n`;
                 message += `💳 <b>From Account:</b> <code>${Telegram.escapeHtml(
                     wallet.name
                 )}</code>\n`;
