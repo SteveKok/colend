@@ -198,7 +198,7 @@ async function loop() {
                     wallet.name
                 )}</code>\n`;
                 message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
-                    edwardWallets[2].wallet.address
+                    edwardWallets[2].name
                 )}</code>\n`;
                 message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                     Number(amountToTransfer) / 10 ** Number(token.decimals)
