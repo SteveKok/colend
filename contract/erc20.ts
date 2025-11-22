@@ -14,6 +14,8 @@ export function erc20(tokenAddress: string, wallet: ethers.Wallet) {
     );
 
     return {
+        transferTo: (to: string, amount: bigint) =>
+            contract.transfer(to, amount),
         transferToSummary: async () => {
             const balance = await contract.balanceOf(wallet.address);
             const parsedBalance = z.bigint().parse(balance);

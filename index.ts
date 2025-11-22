@@ -10,12 +10,12 @@ import { erc20 } from './contract/erc20';
 await Colend.init();
 await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail', '/collect']);
 
-const edwardColendPoolProxyInstances = edwardWallets.map((wallet) => ({
+const edwardColendPoolProxyInstances = [edwardWallets[2]].map((wallet) => ({
     name: wallet.name,
     proxy: colendPoolProxy(wallet.wallet),
 }));
 
-const allColendPoolProxyInstances = [...edwardWallets, ...steveWallets].map(
+const allColendPoolProxyInstances = [edwardWallets[2], steveWallets[0]].map(
     (wallet) => ({
         name: wallet.name,
         proxy: colendPoolProxy(wallet.wallet),
@@ -158,6 +158,53 @@ async function loop() {
 
                     Telegram.sendTelegram(message);
                 }
+            }
+        }
+
+        for (const wallet of [edwardWallets[0], edwardWallets[1]]) {
+            for (const token of withdrawableTokens) {
+                const erc20Instance = erc20(token.aTokenAddress, wallet.wallet);
+
+                let amountToTransfer = 1000n * 10n ** token.decimals;
+                let tx;
+
+                while (amountToTransfer > 10n * 10n ** token.decimals) {
+                    try {
+                        tx = await erc20Instance.transferTo(
+                            edwardWallets[3].wallet.address,
+                            amountToTransfer
+                        );
+
+                        break;
+                    } catch (error) {
+                        amountToTransfer = (amountToTransfer * 8n) / 10n;
+                    }
+                }
+
+                if (!tx) {
+                    continue;
+                }
+
+                const txReceipt = await tx.wait();
+
+                if (txReceipt.status !== 1) {
+                    continue;
+                }
+
+                let message = `📤 <b>Transferred ${Telegram.escapeHtml(
+                    token.symbol
+                )}</b>\n`;
+                message += `💳 <b>From Account:</b> <code>${Telegram.escapeHtml(
+                    wallet.name
+                )}</code>\n`;
+                message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
+                    edwardWallets[3].wallet.address
+                )}</code>\n`;
+                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                    Number(amountToTransfer) / 10 ** Number(token.decimals)
+                )}</code>\n\n`;
+
+                Telegram.sendTelegram(message);
             }
         }
 

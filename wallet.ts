@@ -10,6 +10,10 @@ export const edwardWallets = [
         name: 'Edward Account 2',
         wallet: new ethers.Wallet(process.env.EDWARD_KEY_2!, jsonRpcProvider),
     },
+    {
+        name: 'Edward Account 3',
+        wallet: new ethers.Wallet(process.env.EDWARD_KEY_3!, jsonRpcProvider),
+    },
 ];
 
 export const steveWallets = [

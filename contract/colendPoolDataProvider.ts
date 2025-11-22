@@ -135,6 +135,7 @@ const reserveDataSchema = z
 type TokenData = {
     symbol: string;
     tokenAddress: string;
+    aTokenAddress: string;
     reserveCap: z.infer<typeof reserveCapsSchema>;
     reserveConfig: z.infer<typeof reserveConfigurationDataSchema>;
     borrowCap: bigint;
@@ -168,6 +169,7 @@ async function init() {
         tokenData.push({
             symbol,
             tokenAddress,
+            aTokenAddress,
             reserveCap,
             reserveConfig,
             borrowCap,
@@ -233,6 +235,7 @@ async function borrowableTokens(excludedTokenSymbol: string[] = []) {
                     token.reserveConfig.decimals
                 ),
                 address: token.tokenAddress,
+                aTokenAddress: token.aTokenAddress,
                 bigintBorrowableAmount: 0n,
                 decimals: token.reserveConfig.decimals,
                 status: 'Reached borrow cap',
@@ -265,6 +268,7 @@ async function borrowableTokens(excludedTokenSymbol: string[] = []) {
                     token.reserveConfig.decimals
                 ),
                 address: token.tokenAddress,
+                aTokenAddress: token.aTokenAddress,
                 bigintBorrowableAmount: 0n,
                 decimals: token.reserveConfig.decimals,
                 status: 'No liquidity',
@@ -305,6 +309,7 @@ async function borrowableTokens(excludedTokenSymbol: string[] = []) {
                 token.reserveConfig.decimals
             ),
             address: token.tokenAddress,
+            aTokenAddress: token.aTokenAddress,
             bigintBorrowableAmount: borrowableAmount,
             decimals: token.reserveConfig.decimals,
             status: 'Available to borrow',
@@ -357,6 +362,7 @@ async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
                 token.reserveConfig.decimals
             ),
             address: token.tokenAddress,
+            aTokenAddress: token.aTokenAddress,
             bigintWithdrawableAmount: withdrawableAmount,
             decimals: token.reserveConfig.decimals,
             status:
