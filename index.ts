@@ -10,16 +10,14 @@ import { erc20 } from './contract/erc20';
 await Colend.init();
 await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail', '/collect']);
 
-const borrowColendPoolProxyInstances = [edwardWallets[2], steveWallets[0]].map(
-    (wallet) => ({
-        name: wallet.name,
-        proxy: colendPoolProxy(wallet.wallet),
-    })
-);
+const borrowColendPoolProxyInstances = [edwardWallets[2]].map((wallet) => ({
+    name: wallet.name,
+    proxy: colendPoolProxy(wallet.wallet),
+}));
 
 const withdrawColendPoolProxyInstances = [
     edwardWallets[2],
-    steveWallets[0],
+    steveWallets[1],
 ].map((wallet) => ({
     name: wallet.name,
     proxy: colendPoolProxy(wallet.wallet),
@@ -205,6 +203,53 @@ async function loop() {
                 )}</code>\n`;
                 message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
                     edwardWallets[2].name
+                )}</code>\n`;
+                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                    Number(amountToTransfer) / 10 ** Number(token.decimals)
+                )}</code>\n\n`;
+
+                Telegram.sendTelegram(message);
+            }
+        }
+
+        for (const wallet of [steveWallets[0]]) {
+            for (const token of withdrawableTokens) {
+                const erc20Instance = erc20(token.aTokenAddress, wallet.wallet);
+
+                let amountToTransfer = 1000n * 10n ** token.decimals;
+                let tx;
+
+                while (amountToTransfer > 10n * 10n ** token.decimals) {
+                    try {
+                        tx = await erc20Instance.transferTo(
+                            steveWallets[1].wallet.address,
+                            amountToTransfer
+                        );
+
+                        break;
+                    } catch (error) {
+                        amountToTransfer = (amountToTransfer * 7n) / 10n;
+                    }
+                }
+
+                if (!tx) {
+                    continue;
+                }
+
+                const txReceipt = await tx.wait();
+
+                console.log(txReceipt);
+
+                if (txReceipt.status !== 1) {
+                    continue;
+                }
+
+                let message = `📤 <b>Transferred aUSDT</b>\n`;
+                message += `💳 <b>From Account:</b> <code>${Telegram.escapeHtml(
+                    wallet.name
+                )}</code>\n`;
+                message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
+                    steveWallets[1].name
                 )}</code>\n`;
                 message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                     Number(amountToTransfer) / 10 ** Number(token.decimals)
