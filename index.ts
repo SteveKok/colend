@@ -10,21 +10,28 @@ import { erc20 } from './contract/erc20';
 await Colend.init();
 await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail', '/collect']);
 
-const edwardColendPoolProxyInstances = [edwardWallets[2]].map((wallet) => ({
-    name: wallet.name,
-    proxy: colendPoolProxy(wallet.wallet),
-}));
-
-const allColendPoolProxyInstances = [edwardWallets[2], steveWallets[0]].map(
+const borrowColendPoolProxyInstances = [edwardWallets[2], steveWallets[0]].map(
     (wallet) => ({
         name: wallet.name,
         proxy: colendPoolProxy(wallet.wallet),
     })
 );
 
+const withdrawColendPoolProxyInstances = [
+    edwardWallets[2],
+    steveWallets[0],
+].map((wallet) => ({
+    name: wallet.name,
+    proxy: colendPoolProxy(wallet.wallet),
+}));
+
 async function loop() {
     try {
-        const borrowableTokens = await Colend.borrowableTokens(['USDT']);
+        const borrowableTokens = await Colend.borrowableTokens([
+            'USDT',
+            'COREBTC',
+            'SolvBTC.b',
+        ]);
         const withdrawableTokens = await Colend.withdrawableTokens(['USDT']);
 
         const detectedCommmands = await Telegram.getUpdate();
@@ -37,7 +44,7 @@ async function loop() {
             for (const token of filteredTokens) {
                 const tokenPrice = await getAssetPrice(token.address);
 
-                for (const colendPoolProxyInstance of allColendPoolProxyInstances) {
+                for (const colendPoolProxyInstance of withdrawColendPoolProxyInstances) {
                     let bigintWithdrawableAmount =
                         (token.bigintWithdrawableAmount * 98n) / 100n;
                     let tx;
@@ -103,7 +110,7 @@ async function loop() {
             for (const token of filteredTokens) {
                 const tokenPrice = await getAssetPrice(token.address);
 
-                for (const colendPoolProxyInstance of edwardColendPoolProxyInstances) {
+                for (const colendPoolProxyInstance of borrowColendPoolProxyInstances) {
                     let bigintBorrowableAmount =
                         (token.bigintBorrowableAmount * 98n) / 100n;
                     let tx;
