@@ -220,7 +220,7 @@ async function loop() {
             for (const token of withdrawableTokens) {
                 const erc20Instance = erc20(token.aTokenAddress, wallet.wallet);
 
-                let amountToTransfer = 1000n * 10n ** token.decimals;
+                let amountToTransfer = 10000n * 10n ** token.decimals;
                 let tx;
 
                 while (amountToTransfer > 10n * 10n ** token.decimals) {
