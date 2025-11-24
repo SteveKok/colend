@@ -266,6 +266,8 @@ async function loop() {
         if (detectedCommmands.includes('/collect')) {
             let message =
                 "⚠️ <b>First bill is generation process, future borrow won't be collect into the summary address to avoid confusion.</b>\n\n";
+
+            Telegram.sendTelegram(message);
             // const tokens = [...borrowableTokens, ...withdrawableTokens];
             // for (const token of tokens) {
             //     for (const wallet of [
