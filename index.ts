@@ -26,7 +26,7 @@ async function loop() {
     try {
         const borrowableTokens = await Colend.borrowableTokens([
             'USDT',
-            // 'COREBTC',
+            'COREBTC',
         ]);
         const withdrawableTokens = await Colend.withdrawableTokens([
             'USDT',

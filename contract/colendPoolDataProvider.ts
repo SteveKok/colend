@@ -322,9 +322,9 @@ async function borrowableTokens(excludedTokenSymbol: string[] = []) {
 async function withdrawableTokens(filterByTokenSymbol: string[] = []) {
     const withdrawableTokens = tokenData.filter(
         (token) =>
-            !token.reserveConfig.isFrozen &&
-            (filterByTokenSymbol.length === 0 ||
-                filterByTokenSymbol.includes(token.symbol))
+            // !token.reserveConfig.isFrozen &&
+            filterByTokenSymbol.length === 0 ||
+            filterByTokenSymbol.includes(token.symbol)
     );
 
     const results = [];
