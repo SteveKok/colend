@@ -3,7 +3,6 @@ import Telegram from './output/telegram';
 import { colendPoolProxy } from './contract/colendPoolProxy';
 import { edwardWallets } from './wallet';
 import { steveWallets } from './wallet';
-import { getAsset } from 'node:sea';
 import { getAssetPrice } from './contract/colendOracle';
 import { erc20 } from './contract/erc20';
 
@@ -27,7 +26,7 @@ async function loop() {
     try {
         const borrowableTokens = await Colend.borrowableTokens([
             'USDT',
-            'COREBTC',
+            // 'COREBTC',
         ]);
         const withdrawableTokens = await Colend.withdrawableTokens([
             'USDT',
