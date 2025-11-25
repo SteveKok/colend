@@ -27,11 +27,9 @@ async function loop() {
         const borrowableTokens = await Colend.borrowableTokens([
             'USDT',
             'COREBTC',
+            'stCORE',
         ]);
-        const withdrawableTokens = await Colend.withdrawableTokens([
-            'USDT',
-            'COREBTC',
-        ]);
+        const withdrawableTokens = await Colend.withdrawableTokens(['USDT']);
 
         const detectedCommmands = await Telegram.getUpdate();
 
@@ -167,56 +165,56 @@ async function loop() {
             }
         }
 
-        // for (const wallet of [
-        //     edwardWallets[0],
-        //     edwardWallets[1],
-        //     edwardWallets[2],
-        // ]) {
-        //     for (const token of withdrawableTokens) {
-        //         const erc20Instance = erc20(token.aTokenAddress, wallet.wallet);
+        for (const wallet of [
+            edwardWallets[0],
+            edwardWallets[1],
+            edwardWallets[2],
+        ]) {
+            for (const token of withdrawableTokens) {
+                const erc20Instance = erc20(token.aTokenAddress, wallet.wallet);
 
-        //         let amountToTransfer = 1000n * 10n ** token.decimals;
-        //         let tx;
+                let amountToTransfer = 1000n * 10n ** token.decimals;
+                let tx;
 
-        //         while (amountToTransfer > 10n * 10n ** token.decimals) {
-        //             try {
-        //                 tx = await erc20Instance.transferTo(
-        //                     edwardWallets[3].wallet.address,
-        //                     amountToTransfer
-        //                 );
+                while (amountToTransfer > 10n * 10n ** token.decimals) {
+                    try {
+                        tx = await erc20Instance.transferTo(
+                            edwardWallets[3].wallet.address,
+                            amountToTransfer
+                        );
 
-        //                 break;
-        //             } catch (error) {
-        //                 amountToTransfer = (amountToTransfer * 7n) / 10n;
-        //             }
-        //         }
+                        break;
+                    } catch (error) {
+                        amountToTransfer = (amountToTransfer * 7n) / 10n;
+                    }
+                }
 
-        //         if (!tx) {
-        //             continue;
-        //         }
+                if (!tx) {
+                    continue;
+                }
 
-        //         const txReceipt = await tx.wait();
+                const txReceipt = await tx.wait();
 
-        //         console.log(txReceipt);
+                console.log(txReceipt);
 
-        //         if (txReceipt.status !== 1) {
-        //             continue;
-        //         }
+                if (txReceipt.status !== 1) {
+                    continue;
+                }
 
-        //         let message = `📤 <b>Transferred aUSDT</b>\n`;
-        //         message += `💳 <b>From Account:</b> <code>${Telegram.escapeHtml(
-        //             wallet.name
-        //         )}</code>\n`;
-        //         message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
-        //             edwardWallets[3].name
-        //         )}</code>\n`;
-        //         message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-        //             Number(amountToTransfer) / 10 ** Number(token.decimals)
-        //         )}</code>\n\n`;
+                let message = `📤 <b>Transferred aUSDT</b>\n`;
+                message += `💳 <b>From Account:</b> <code>${Telegram.escapeHtml(
+                    wallet.name
+                )}</code>\n`;
+                message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
+                    edwardWallets[3].name
+                )}</code>\n`;
+                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                    Number(amountToTransfer) / 10 ** Number(token.decimals)
+                )}</code>\n\n`;
 
-        //         Telegram.sendTelegram(message);
-        //     }
-        // }
+                Telegram.sendTelegram(message);
+            }
+        }
 
         for (const wallet of [steveWallets[0]]) {
             for (const token of withdrawableTokens) {
@@ -266,35 +264,34 @@ async function loop() {
         }
 
         if (detectedCommmands.includes('/collect')) {
-            let message =
-                "⚠️ <b>First bill is generation process, future borrow won't be collect into the summary address to avoid confusion.</b>\n\n";
-
-            Telegram.sendTelegram(message);
-            // const tokens = [...borrowableTokens, ...withdrawableTokens];
-            // for (const token of tokens) {
-            //     for (const wallet of [
-            //         edwardWallets[0],
-            //         edwardWallets[1],
-            //         edwardWallets[2],
-            //     ]) {
-            //         const erc20Instance = erc20(token.address, wallet.wallet);
-            //         const transferedBalance =
-            //             await erc20Instance.transferToSummary();
-            //         if (transferedBalance > 0n) {
-            //             let message = `📥 <b>Transferred ${Telegram.escapeHtml(
-            //                 token.symbol
-            //             )} to Summary Wallet</b>\n`;
-            //             message += `💳 <b>From Account:</b> <code>${Telegram.escapeHtml(
-            //                 wallet.name
-            //             )}</code>\n`;
-            //             message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-            //                 Number(transferedBalance) /
-            //                     10 ** Number(token.decimals)
-            //             )}</code>\n\n`;
-            //             Telegram.sendTelegram(message);
-            //         }
-            //     }
-            // }
+            const tokens = [...borrowableTokens, ...withdrawableTokens];
+            for (const token of tokens) {
+                for (const wallet of [
+                    edwardWallets[0],
+                    edwardWallets[1],
+                    edwardWallets[2],
+                ]) {
+                    const erc20Instance = erc20(token.address, wallet.wallet);
+                    const transferedBalance =
+                        await erc20Instance.transferToSummary();
+                    if (transferedBalance > 0n) {
+                        let message = `📥 <b>Transferred ${Telegram.escapeHtml(
+                            token.symbol
+                        )} to Summary Wallet</b>\n`;
+                        message += `💳 <b>From Account:</b> <code>${Telegram.escapeHtml(
+                            wallet.name
+                        )}</code>\n`;
+                        message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
+                            edwardWallets[3].name
+                        )}</code>\n`;
+                        message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                            Number(transferedBalance) /
+                                10 ** Number(token.decimals)
+                        )}</code>\n\n`;
+                        Telegram.sendTelegram(message);
+                    }
+                }
+            }
         }
 
         if (detectedCommmands.includes('/alive')) {
