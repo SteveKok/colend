@@ -5,9 +5,17 @@ import { edwardWallets } from './wallet';
 import { steveWallets } from './wallet';
 import { getAssetPrice } from './contract/colendOracle';
 import { erc20 } from './contract/erc20';
+import { wcore } from './contract/wcore';
 
 await Colend.init();
-await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail', '/collect']);
+await Telegram.init([
+    '/alive',
+    '/menu',
+    '/summary',
+    '/fullDetail',
+    '/collect',
+    '/unwrap',
+]);
 
 const borrowColendPoolProxyInstances = [edwardWallets[4]].map((wallet) => ({
     name: wallet.name,
@@ -264,6 +272,28 @@ async function loop() {
             }
         }
 
+        if (detectedCommmands.includes('/unwrap')) {
+            const wcoreInstance = wcore(edwardWallets[3].wallet);
+            const unwrap_amount = await wcoreInstance.unwrap();
+
+            if (unwrap_amount > 0n) {
+                let message = `📥 <b>Unwrapped wCORE to CORE</b>\n`;
+                message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
+                    edwardWallets[3].name
+                )}</code>\n`;
+                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                    Number(unwrap_amount) / 1e18
+                )}</code>\n\n`;
+                Telegram.sendTelegram(message);
+            } else {
+                let message = `ℹ️ <b>No wCORE to unwrap</b>\n`;
+                message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
+                    edwardWallets[3].name
+                )}</code>\n`;
+                Telegram.sendTelegram(message);
+            }
+        }
+
         if (detectedCommmands.includes('/collect')) {
             const tokens = [...borrowableTokens, ...withdrawableTokens];
             for (const token of tokens) {
@@ -313,6 +343,7 @@ async function loop() {
             message +=
                 '/summary - Show summary of borrowable and withdrawable amounts\n';
             message += '/fullDetail - Show full details of all tokens\n\n';
+            message += '/unwrap - Unwrap wCORE to CORE\n\n';
 
             message +=
                 'If borrowableTokens or withdrawableTokens are detected, bot will send updates automatically.';
