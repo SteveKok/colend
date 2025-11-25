@@ -9,13 +9,13 @@ import { erc20 } from './contract/erc20';
 await Colend.init();
 await Telegram.init(['/alive', '/menu', '/summary', '/fullDetail', '/collect']);
 
-const borrowColendPoolProxyInstances = [edwardWallets[3]].map((wallet) => ({
+const borrowColendPoolProxyInstances = [edwardWallets[4]].map((wallet) => ({
     name: wallet.name,
     proxy: colendPoolProxy(wallet.wallet),
 }));
 
 const withdrawColendPoolProxyInstances = [
-    edwardWallets[3],
+    edwardWallets[4],
     steveWallets[1],
 ].map((wallet) => ({
     name: wallet.name,
@@ -169,17 +169,18 @@ async function loop() {
             edwardWallets[0],
             edwardWallets[1],
             edwardWallets[2],
+            edwardWallets[3],
         ]) {
             for (const token of withdrawableTokens) {
                 const erc20Instance = erc20(token.aTokenAddress, wallet.wallet);
 
-                let amountToTransfer = 1000n * 10n ** token.decimals;
+                let amountToTransfer = 10000n * 10n ** token.decimals;
                 let tx;
 
                 while (amountToTransfer > 10n * 10n ** token.decimals) {
                     try {
                         tx = await erc20Instance.transferTo(
-                            edwardWallets[3].wallet.address,
+                            edwardWallets[4].wallet.address,
                             amountToTransfer
                         );
 
@@ -206,7 +207,7 @@ async function loop() {
                     wallet.name
                 )}</code>\n`;
                 message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
-                    edwardWallets[3].name
+                    edwardWallets[4].name
                 )}</code>\n`;
                 message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                     Number(amountToTransfer) / 10 ** Number(token.decimals)
@@ -270,6 +271,7 @@ async function loop() {
                     edwardWallets[0],
                     edwardWallets[1],
                     edwardWallets[2],
+                    edwardWallets[4],
                 ]) {
                     const erc20Instance = erc20(token.address, wallet.wallet);
                     const transferedBalance =
