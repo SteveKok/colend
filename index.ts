@@ -68,8 +68,13 @@ async function loop() {
 
                             break;
                         } catch (error) {
+                            const randomFactor = BigInt(
+                                Math.floor(Math.random() * 20) + 70
+                            );
+
                             bigintWithdrawableAmount =
-                                (bigintWithdrawableAmount * 8n) / 10n;
+                                (bigintWithdrawableAmount * randomFactor) /
+                                100n;
                         }
                     }
 
@@ -134,8 +139,12 @@ async function loop() {
 
                             break;
                         } catch (error) {
+                            const randomFactor = BigInt(
+                                Math.floor(Math.random() * 20) + 70
+                            );
+
                             bigintBorrowableAmount =
-                                (bigintBorrowableAmount * 8n) / 10n;
+                                (bigintBorrowableAmount * randomFactor) / 100n;
                         }
                     }
 
@@ -194,7 +203,12 @@ async function loop() {
 
                         break;
                     } catch (error) {
-                        amountToTransfer = (amountToTransfer * 7n) / 10n;
+                        const randomFactor = BigInt(
+                            Math.floor(Math.random() * 40) + 50
+                        );
+
+                        amountToTransfer =
+                            (amountToTransfer * randomFactor) / 100n;
                     }
                 }
 
@@ -241,7 +255,12 @@ async function loop() {
 
                         break;
                     } catch (error) {
-                        amountToTransfer = (amountToTransfer * 7n) / 10n;
+                        const randomFactor = BigInt(
+                            Math.floor(Math.random() * 40) + 50
+                        );
+
+                        amountToTransfer =
+                            (amountToTransfer * randomFactor) / 100n;
                     }
                 }
 
