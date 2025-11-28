@@ -17,15 +17,7 @@ await Telegram.init([
     '/unwrap',
 ]);
 
-const borrowColendPoolProxyInstances = [edwardWallets[4]].map((wallet) => ({
-    name: wallet.name,
-    proxy: colendPoolProxy(wallet.wallet),
-}));
-
-const withdrawColendPoolProxyInstances = [
-    edwardWallets[4],
-    steveWallets[1],
-].map((wallet) => ({
+const withdrawColendPoolProxyInstances = [steveWallets[1]].map((wallet) => ({
     name: wallet.name,
     proxy: colendPoolProxy(wallet.wallet),
 }));
@@ -112,134 +104,7 @@ async function loop() {
             }
         }
 
-        if (borrowableTokens.some((t) => t.bigintBorrowableAmount > 0n)) {
-            const filteredTokens = borrowableTokens.filter(
-                (t) => t.bigintBorrowableAmount > 0n
-            );
-
-            for (const token of filteredTokens) {
-                const tokenPrice = await getAssetPrice(token.address);
-
-                for (const colendPoolProxyInstance of borrowColendPoolProxyInstances) {
-                    let bigintBorrowableAmount =
-                        (token.bigintBorrowableAmount * 98n) / 100n;
-                    let tx;
-
-                    while (
-                        (Number(bigintBorrowableAmount) /
-                            10 ** Number(token.decimals)) *
-                            tokenPrice >
-                        10
-                    ) {
-                        try {
-                            tx = await colendPoolProxyInstance.proxy.borrow(
-                                token.address,
-                                bigintBorrowableAmount
-                            );
-
-                            break;
-                        } catch (error) {
-                            const randomFactor = BigInt(
-                                Math.floor(Math.random() * 20) + 70
-                            );
-
-                            bigintBorrowableAmount =
-                                (bigintBorrowableAmount * randomFactor) / 100n;
-                        }
-                    }
-
-                    if (!tx) {
-                        continue;
-                    }
-
-                    const txReceipt = await tx.wait();
-
-                    if (txReceipt.status !== 1) {
-                        continue;
-                    }
-
-                    let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Borrowed ${Telegram.escapeHtml(
-                        token.symbol
-                    )}</b>\n`;
-                    message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
-                        colendPoolProxyInstance.name
-                    )}</code>\n`;
-                    message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-                        Number(bigintBorrowableAmount) /
-                            10 ** Number(token.decimals)
-                    )}</code>\n`;
-                    message += `💰 Worth: <code>${Telegram.escapeHtml(
-                        (Number(bigintBorrowableAmount) /
-                            10 ** Number(token.decimals)) *
-                            tokenPrice
-                    )} USD</code>\n\n`;
-                    message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
-                        tx.hash
-                    )}\n\n`;
-
-                    Telegram.sendTelegram(message);
-                }
-            }
-        }
-
-        for (const wallet of [
-            edwardWallets[0],
-            edwardWallets[1],
-            edwardWallets[2],
-            edwardWallets[3],
-        ]) {
-            for (const token of withdrawableTokens) {
-                const erc20Instance = erc20(token.aTokenAddress, wallet.wallet);
-
-                let amountToTransfer = 10000n * 10n ** token.decimals;
-                let tx;
-
-                while (amountToTransfer > 10n * 10n ** token.decimals) {
-                    try {
-                        tx = await erc20Instance.transferTo(
-                            edwardWallets[4].wallet.address,
-                            amountToTransfer
-                        );
-
-                        break;
-                    } catch (error) {
-                        const randomFactor = BigInt(
-                            Math.floor(Math.random() * 40) + 50
-                        );
-
-                        amountToTransfer =
-                            (amountToTransfer * randomFactor) / 100n;
-                    }
-                }
-
-                if (!tx) {
-                    continue;
-                }
-
-                const txReceipt = await tx.wait();
-
-                console.log(txReceipt);
-
-                if (txReceipt.status !== 1) {
-                    continue;
-                }
-
-                let message = `📤 <b>Transferred aUSDT</b>\n`;
-                message += `💳 <b>From Account:</b> <code>${Telegram.escapeHtml(
-                    wallet.name
-                )}</code>\n`;
-                message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
-                    edwardWallets[4].name
-                )}</code>\n`;
-                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-                    Number(amountToTransfer) / 10 ** Number(token.decimals)
-                )}</code>\n\n`;
-
-                Telegram.sendTelegram(message);
-            }
-        }
-
-        for (const wallet of [steveWallets[0]]) {
+        for (const wallet of [...edwardWallets, steveWallets[0]]) {
             for (const token of withdrawableTokens) {
                 const erc20Instance = erc20(token.aTokenAddress, wallet.wallet);
 
