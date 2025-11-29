@@ -237,13 +237,13 @@ async function loop() {
         }
 
         if (detectedCommmands.includes('/unwrap')) {
-            const wcoreInstance = wcore(edwardWallets[3].wallet);
+            const wcoreInstance = wcore(steveWallets[1].wallet);
             const unwrap_amount = await wcoreInstance.unwrap();
 
             if (unwrap_amount > 0n) {
                 let message = `📥 <b>Unwrapped wCORE to CORE</b>\n`;
                 message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
-                    edwardWallets[3].name
+                    steveWallets[1].name
                 )}</code>\n`;
                 message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                     Number(unwrap_amount) / 1e18
@@ -252,7 +252,7 @@ async function loop() {
             } else {
                 let message = `ℹ️ <b>No wCORE to unwrap</b>\n`;
                 message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
-                    edwardWallets[3].name
+                    steveWallets[1].name
                 )}</code>\n`;
                 Telegram.sendTelegram(message);
             }
