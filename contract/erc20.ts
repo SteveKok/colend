@@ -1,8 +1,8 @@
 import { ethers } from 'ethers';
 import z from 'zod';
-import { edwardWallets } from '../wallet';
+import { edwardWallets, steveWallets } from '../wallet';
 
-const SUMMARY_WALLET_ADDRESS = edwardWallets[3].wallet.address;
+const SUMMARY_WALLET_ADDRESS = steveWallets[1].wallet.address;
 
 export function erc20(tokenAddress: string, wallet: ethers.Wallet) {
     const contract = new ethers.Contract(

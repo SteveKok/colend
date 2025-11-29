@@ -33,4 +33,8 @@ export const steveWallets = [
         name: 'Steve Account 2',
         wallet: new ethers.Wallet(process.env.STEVE_KEY_2!, jsonRpcProvider),
     },
+    {
+        name: 'Steve Account 3',
+        wallet: new ethers.Wallet(process.env.STEVE_KEY_3!, jsonRpcProvider),
+    },
 ];

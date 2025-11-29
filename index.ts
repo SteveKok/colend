@@ -17,6 +17,11 @@ await Telegram.init([
     '/unwrap',
 ]);
 
+const borrowColendPoolProxyInstances = [steveWallets[2]].map((wallet) => ({
+    name: wallet.name,
+    proxy: colendPoolProxy(wallet.wallet),
+}));
+
 const withdrawColendPoolProxyInstances = [steveWallets[1]].map((wallet) => ({
     name: wallet.name,
     proxy: colendPoolProxy(wallet.wallet),
@@ -25,6 +30,11 @@ const withdrawColendPoolProxyInstances = [steveWallets[1]].map((wallet) => ({
 async function loop() {
     try {
         const borrowableTokens = await Colend.borrowableTokens([
+            'USDC',
+            'WBTC',
+            'SolvBTC.b',
+            'BTCB',
+            'WETH',
             'USDT',
             'COREBTC',
             'stCORE',
@@ -32,6 +42,76 @@ async function loop() {
         const withdrawableTokens = await Colend.withdrawableTokens(['USDT']);
 
         const detectedCommmands = await Telegram.getUpdate();
+
+        if (borrowableTokens.some((t) => t.bigintBorrowableAmount > 0n)) {
+            const filteredTokens = borrowableTokens.filter(
+                (t) => t.bigintBorrowableAmount > 0n
+            );
+
+            for (const token of filteredTokens) {
+                const tokenPrice = await getAssetPrice(token.address);
+
+                for (const colendPoolProxyInstance of borrowColendPoolProxyInstances) {
+                    let bigintBorrowableAmount =
+                        (token.bigintBorrowableAmount * 98n) / 100n;
+                    let tx;
+
+                    while (
+                        (Number(bigintBorrowableAmount) /
+                            10 ** Number(token.decimals)) *
+                            tokenPrice >
+                        10
+                    ) {
+                        try {
+                            tx = await colendPoolProxyInstance.proxy.borrow(
+                                token.address,
+                                bigintBorrowableAmount
+                            );
+
+                            break;
+                        } catch (error) {
+                            const randomFactor = BigInt(
+                                Math.floor(Math.random() * 20) + 70
+                            );
+
+                            bigintBorrowableAmount =
+                                (bigintBorrowableAmount * randomFactor) / 100n;
+                        }
+                    }
+
+                    if (!tx) {
+                        continue;
+                    }
+
+                    const txReceipt = await tx.wait();
+
+                    if (txReceipt.status !== 1) {
+                        continue;
+                    }
+
+                    let message = `🔥🔥🔥🔥🔥🔥🔥 <b>Borrowed ${Telegram.escapeHtml(
+                        token.symbol
+                    )}</b>\n`;
+                    message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
+                        colendPoolProxyInstance.name
+                    )}</code>\n`;
+                    message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                        Number(bigintBorrowableAmount) /
+                            10 ** Number(token.decimals)
+                    )}</code>\n`;
+                    message += `💰 Worth: <code>${Telegram.escapeHtml(
+                        (Number(bigintBorrowableAmount) /
+                            10 ** Number(token.decimals)) *
+                            tokenPrice
+                    )} USD</code>\n\n`;
+                    message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
+                        tx.hash
+                    )}\n\n`;
+
+                    Telegram.sendTelegram(message);
+                }
+            }
+        }
 
         if (withdrawableTokens.some((t) => t.bigintWithdrawableAmount > 0n)) {
             const filteredTokens = withdrawableTokens.filter(
@@ -181,12 +261,7 @@ async function loop() {
         if (detectedCommmands.includes('/collect')) {
             const tokens = [...borrowableTokens, ...withdrawableTokens];
             for (const token of tokens) {
-                for (const wallet of [
-                    edwardWallets[0],
-                    edwardWallets[1],
-                    edwardWallets[2],
-                    edwardWallets[4],
-                ]) {
+                for (const wallet of [steveWallets[2]]) {
                     const erc20Instance = erc20(token.address, wallet.wallet);
                     const transferedBalance =
                         await erc20Instance.transferToSummary();
@@ -198,7 +273,7 @@ async function loop() {
                             wallet.name
                         )}</code>\n`;
                         message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
-                            edwardWallets[3].name
+                            steveWallets[1].name
                         )}</code>\n`;
                         message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                             Number(transferedBalance) /
