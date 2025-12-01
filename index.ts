@@ -5,6 +5,7 @@ import {
     aescobarWallets,
     dustBorrowWallets,
     dustManagerWallet,
+    junkWallets,
 } from './wallet';
 import { getAssetPrice } from './contract/colendOracle';
 import { erc20 } from './contract/erc20';
@@ -18,7 +19,13 @@ await Telegram.init([
     '/fullDetail',
     '/collect',
     '/unwrap',
+    '/junkSummary',
 ]);
+
+const junkColendPoolProxyInstances = junkWallets.map((wallet) => ({
+    name: wallet.name,
+    proxy: colendPoolProxy(wallet.wallet),
+}));
 
 const borrowColendPoolProxyInstances = [
     ...aescobarWallets,
@@ -190,6 +197,24 @@ async function loop() {
                     Telegram.sendTelegram(message);
                 }
             }
+        }
+
+        if (detectedCommmands.includes('/junkSummary')) {
+            let message = '📥 <b>Withdrawable aCoreUSDT from junks</b>';
+
+            for (const colendPoolProxyInstance of junkColendPoolProxyInstances) {
+                const withdrawable =
+                    await colendPoolProxyInstance.proxy.getWithdrawableUsdt();
+
+                message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
+                    colendPoolProxyInstance.name
+                )}</code>\n`;
+                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                    Number(withdrawable) / 1e6
+                )}</code>\n\n`;
+            }
+
+            Telegram.sendTelegram(message);
         }
 
         if (detectedCommmands.includes('/unwrap')) {
