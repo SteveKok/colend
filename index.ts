@@ -1,8 +1,11 @@
 import Colend from './contract/colendPoolDataProvider';
 import Telegram from './output/telegram';
 import { colendPoolProxy } from './contract/colendPoolProxy';
-import { edwardWallets } from './wallet';
-import { steveWallets } from './wallet';
+import {
+    aescobarWallets,
+    dustBorrowWallets,
+    dustManagerWallet,
+} from './wallet';
 import { getAssetPrice } from './contract/colendOracle';
 import { erc20 } from './contract/erc20';
 import { wcore } from './contract/wcore';
@@ -17,12 +20,18 @@ await Telegram.init([
     '/unwrap',
 ]);
 
-const borrowColendPoolProxyInstances = [steveWallets[2]].map((wallet) => ({
+const borrowColendPoolProxyInstances = [
+    ...aescobarWallets,
+    ...dustBorrowWallets,
+].map((wallet) => ({
     name: wallet.name,
     proxy: colendPoolProxy(wallet.wallet),
 }));
 
-const withdrawColendPoolProxyInstances = [steveWallets[1]].map((wallet) => ({
+const withdrawColendPoolProxyInstances = [
+    ...aescobarWallets,
+    ...dustBorrowWallets,
+].map((wallet) => ({
     name: wallet.name,
     proxy: colendPoolProxy(wallet.wallet),
 }));
@@ -34,7 +43,6 @@ async function loop() {
             'WBTC',
             'SolvBTC.b',
             'BTCB',
-            'WETH',
             'USDT',
             'COREBTC',
             'stCORE',
@@ -184,84 +192,29 @@ async function loop() {
             }
         }
 
-        for (const wallet of [...edwardWallets, steveWallets[0]]) {
-            for (const token of withdrawableTokens) {
-                const erc20Instance = erc20(token.aTokenAddress, wallet.wallet);
-
-                let amountToTransfer = 1000n * 10n ** token.decimals;
-                let tx;
-
-                while (amountToTransfer > 10n * 10n ** token.decimals) {
-                    try {
-                        tx = await erc20Instance.transferTo(
-                            steveWallets[1].wallet.address,
-                            amountToTransfer
-                        );
-
-                        break;
-                    } catch (error) {
-                        const randomFactor = BigInt(
-                            Math.floor(Math.random() * 40) + 50
-                        );
-
-                        amountToTransfer =
-                            (amountToTransfer * randomFactor) / 100n;
-                    }
-                }
-
-                if (!tx) {
-                    continue;
-                }
-
-                const txReceipt = await tx.wait();
-
-                console.log(txReceipt);
-
-                if (txReceipt.status !== 1) {
-                    continue;
-                }
-
-                let message = `📤 <b>Transferred aUSDT</b>\n`;
-                message += `💳 <b>From Account:</b> <code>${Telegram.escapeHtml(
-                    wallet.name
-                )}</code>\n`;
-                message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
-                    steveWallets[1].name
-                )}</code>\n`;
-                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-                    Number(amountToTransfer) / 10 ** Number(token.decimals)
-                )}</code>\n\n`;
-
-                Telegram.sendTelegram(message);
-            }
-        }
-
         if (detectedCommmands.includes('/unwrap')) {
-            const wcoreInstance = wcore(steveWallets[1].wallet);
-            const unwrap_amount = await wcoreInstance.unwrap();
+            for (const wallet of [...aescobarWallets, ...dustBorrowWallets]) {
+                const wcoreInstance = wcore(wallet.wallet);
+                const unwrap_amount = await wcoreInstance.unwrap();
 
-            if (unwrap_amount > 0n) {
-                let message = `📥 <b>Unwrapped wCORE to CORE</b>\n`;
-                message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
-                    steveWallets[1].name
-                )}</code>\n`;
-                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-                    Number(unwrap_amount) / 1e18
-                )}</code>\n\n`;
-                Telegram.sendTelegram(message);
-            } else {
-                let message = `ℹ️ <b>No wCORE to unwrap</b>\n`;
-                message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
-                    steveWallets[1].name
-                )}</code>\n`;
-                Telegram.sendTelegram(message);
+                if (unwrap_amount > 0n) {
+                    let message = `📥 <b>Unwrapped wCORE to CORE</b>\n`;
+                    message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
+                        wallet.name
+                    )}</code>\n`;
+                    message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                        Number(unwrap_amount) / 1e18
+                    )}</code>\n\n`;
+                    Telegram.sendTelegram(message);
+                } else {
+                }
             }
         }
 
         if (detectedCommmands.includes('/collect')) {
             const tokens = [...borrowableTokens, ...withdrawableTokens];
             for (const token of tokens) {
-                for (const wallet of [steveWallets[2]]) {
+                for (const wallet of dustBorrowWallets) {
                     const erc20Instance = erc20(token.address, wallet.wallet);
                     const transferedBalance =
                         await erc20Instance.transferToSummary();
@@ -273,7 +226,7 @@ async function loop() {
                             wallet.name
                         )}</code>\n`;
                         message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
-                            steveWallets[1].name
+                            dustManagerWallet.name
                         )}</code>\n`;
                         message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                             Number(transferedBalance) /
