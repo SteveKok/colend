@@ -110,7 +110,7 @@ async function loop() {
                     }
 
                     const txReceipt = await tx.wait().catch((err: unknown) => {
-                        // Telegram.sendTelegram(JSON.stringify(err));
+                        // await Telegram.sendTelegram(JSON.stringify(err));
                         return { status: 0 };
                     });
 
@@ -137,7 +137,7 @@ async function loop() {
                         tx.hash
                     )}\n\n`;
 
-                    Telegram.sendTelegram(message);
+                    await Telegram.sendTelegram(message);
                 }
             }
         }
@@ -184,7 +184,7 @@ async function loop() {
                     }
 
                     const txReceipt = await tx.wait().catch((err: unknown) => {
-                        // Telegram.sendTelegram(JSON.stringify(err));
+                        // await Telegram.sendTelegram(JSON.stringify(err));
                         return { status: 0 };
                     });
 
@@ -211,7 +211,7 @@ async function loop() {
                         tx.hash
                     )}\n\n`;
 
-                    Telegram.sendTelegram(message);
+                    await Telegram.sendTelegram(message);
                 }
             }
         }
@@ -252,7 +252,7 @@ async function loop() {
                 }
 
                 const txReceipt = await tx.wait().catch((err: unknown) => {
-                    // Telegram.sendTelegram(JSON.stringify(err));
+                    // await Telegram.sendTelegram(JSON.stringify(err));
                     return { status: 0 };
                 });
 
@@ -274,7 +274,7 @@ async function loop() {
                     tx.hash
                 )}\n\n`;
 
-                Telegram.sendTelegram(message);
+                await Telegram.sendTelegram(message);
             }
 
             for (const colendPoolProxyInstance of junkColendPoolProxyInstances) {
@@ -312,7 +312,7 @@ async function loop() {
                 }
 
                 const txReceipt = await tx.wait().catch((err: unknown) => {
-                    // Telegram.sendTelegram(JSON.stringify(err));
+                    // await Telegram.sendTelegram(JSON.stringify(err));
                     return { status: 0 };
                 });
 
@@ -334,7 +334,7 @@ async function loop() {
                     tx.hash
                 )}\n\n`;
 
-                Telegram.sendTelegram(message);
+                await Telegram.sendTelegram(message);
             }
         }
 
@@ -353,7 +353,7 @@ async function loop() {
                 )}</code>\n\n`;
             }
 
-            Telegram.sendTelegram(message);
+            await Telegram.sendTelegram(message);
         }
 
         if (detectedCommmands.includes('/unwrap')) {
@@ -369,7 +369,7 @@ async function loop() {
                     message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
                         Number(unwrap_amount) / 1e18
                     )}</code>\n\n`;
-                    Telegram.sendTelegram(message);
+                    await Telegram.sendTelegram(message);
                 } else {
                 }
             }
@@ -396,7 +396,7 @@ async function loop() {
                             Number(transferedBalance) /
                                 10 ** Number(token.decimals)
                         )}</code>\n\n`;
-                        Telegram.sendTelegram(message);
+                        await Telegram.sendTelegram(message);
                     }
                 }
             }
@@ -405,7 +405,7 @@ async function loop() {
         if (detectedCommmands.includes('/alive')) {
             const message =
                 'No worry, I am still alive and working properly...';
-            Telegram.sendTelegram(message);
+            await Telegram.sendTelegram(message);
         }
 
         if (detectedCommmands.includes('/menu')) {
@@ -424,7 +424,7 @@ async function loop() {
             message +=
                 'If borrowableTokens or withdrawableTokens are detected, bot will send updates automatically.';
 
-            Telegram.sendTelegram(message);
+            await Telegram.sendTelegram(message);
         }
 
         if (detectedCommmands.includes('/summary')) {
@@ -448,7 +448,7 @@ async function loop() {
                 )}</code>\n`;
             });
 
-            Telegram.sendTelegram(message);
+            await Telegram.sendTelegram(message);
         }
 
         if (detectedCommmands.includes('/fullDetail')) {
@@ -505,7 +505,7 @@ async function loop() {
                 )}</code>\n\n`;
             }
 
-            Telegram.sendTelegram(message);
+            await Telegram.sendTelegram(message);
         }
     } catch (error) {
         console.error('Error in main loop:', error);
