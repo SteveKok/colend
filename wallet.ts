@@ -8,8 +8,8 @@ export const dustManagerWallet = {
 
 export const dustBorrowWallets = [
     {
-        name: 'Dust Borrower 4',
-        wallet: new ethers.Wallet(process.env.DUST_KEY_4!, jsonRpcProvider),
+        name: 'Dust Borrower 5',
+        wallet: new ethers.Wallet(process.env.DUST_KEY_5!, jsonRpcProvider),
     },
 ];
 
@@ -57,5 +57,9 @@ export const junkWallets = [
     {
         name: 'Dust Borrower 3',
         wallet: new ethers.Wallet(process.env.DUST_KEY_3!, jsonRpcProvider),
+    },
+    {
+        name: 'Dust Borrower 4',
+        wallet: new ethers.Wallet(process.env.DUST_KEY_4!, jsonRpcProvider),
     },
 ];
