@@ -200,7 +200,7 @@ async function loop() {
         }
 
         if (detectedCommmands.includes('/junkSummary')) {
-            let message = '📥 <b>Withdrawable aCoreUSDT from junks</b>';
+            let message = '📥 <b>Withdrawable aCoreUSDT from junks</b>\n\n';
 
             for (const colendPoolProxyInstance of junkColendPoolProxyInstances) {
                 const withdrawable =
@@ -210,7 +210,7 @@ async function loop() {
                     colendPoolProxyInstance.name
                 )}</code>\n`;
                 message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-                    Number(withdrawable) / 1e6
+                    Math.max(Number(withdrawable) / 1e6, 0)
                 )}</code>\n\n`;
             }
 
