@@ -199,64 +199,66 @@ async function loop() {
 
                     Telegram.sendTelegram(message);
                 }
+            }
+        }
 
-                for (const colendPoolProxyInstance of junkColendPoolProxyInstances) {
-                    let bigintWithdrawableAmount =
-                        await colendPoolProxyInstance.proxy.getWithdrawableUsdt();
+        for (const token of withdrawableTokens) {
+            const tokenPrice = await getAssetPrice(token.address);
+            for (const colendPoolProxyInstance of junkColendPoolProxyInstances) {
+                let bigintWithdrawableAmount =
+                    await colendPoolProxyInstance.proxy.getWithdrawableUsdt();
 
-                    bigintWithdrawableAmount =
-                        (bigintWithdrawableAmount * 98n) / 100n;
+                bigintWithdrawableAmount =
+                    (bigintWithdrawableAmount * 98n) / 100n;
 
-                    let tx;
+                let tx;
 
-                    let erc20Instance = erc20(
-                        token.aTokenAddress,
-                        colendPoolProxyInstance.wallet
-                    );
+                let erc20Instance = erc20(
+                    token.aTokenAddress,
+                    colendPoolProxyInstance.wallet
+                );
 
-                    while (bigintWithdrawableAmount > 10n * 10n ** 6n) {
-                        try {
-                            tx = await erc20Instance.transferTo(
-                                dustManagerWallet.wallet.address,
-                                bigintWithdrawableAmount
-                            );
-                        } catch (error) {
-                            const randomFactor = BigInt(
-                                Math.floor(Math.random() * 20) + 70
-                            );
+                while (bigintWithdrawableAmount > 10n * 10n ** 6n) {
+                    try {
+                        tx = await erc20Instance.transferTo(
+                            dustManagerWallet.wallet.address,
+                            bigintWithdrawableAmount
+                        );
+                    } catch (error) {
+                        const randomFactor = BigInt(
+                            Math.floor(Math.random() * 20) + 70
+                        );
 
-                            bigintWithdrawableAmount =
-                                (bigintWithdrawableAmount * randomFactor) /
-                                100n;
-                        }
+                        bigintWithdrawableAmount =
+                            (bigintWithdrawableAmount * randomFactor) / 100n;
                     }
-
-                    if (!tx) {
-                        continue;
-                    }
-
-                    const txReceipt = await tx.wait();
-
-                    if (txReceipt.status !== 1) {
-                        continue;
-                    }
-
-                    let message = `🏧🏧🏧🏧🏧🏧🏧 <b>Withdrawn aCoreUsdt from junk</b>\n`;
-                    message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
-                        colendPoolProxyInstance.name
-                    )}</code>\n`;
-                    message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-                        Number(bigintWithdrawableAmount) / 1e6
-                    )}</code>\n\n`;
-                    message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
-                        dustManagerWallet.name
-                    )}</code>\n`;
-                    message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
-                        tx.hash
-                    )}\n\n`;
-
-                    Telegram.sendTelegram(message);
                 }
+
+                if (!tx) {
+                    continue;
+                }
+
+                const txReceipt = await tx.wait();
+
+                if (txReceipt.status !== 1) {
+                    continue;
+                }
+
+                let message = `🏧🏧🏧🏧🏧🏧🏧 <b>Withdrawn aCoreUsdt from junk</b>\n`;
+                message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
+                    colendPoolProxyInstance.name
+                )}</code>\n`;
+                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
+                    Number(bigintWithdrawableAmount) / 1e6
+                )}</code>\n\n`;
+                message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
+                    dustManagerWallet.name
+                )}</code>\n`;
+                message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
+                    tx.hash
+                )}\n\n`;
+
+                Telegram.sendTelegram(message);
             }
         }
 
