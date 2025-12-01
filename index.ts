@@ -38,6 +38,8 @@ const withdrawColendPoolProxyInstances = dustBorrowWallets.map((wallet) => ({
 async function loop() {
     try {
         const borrowableTokens = await Colend.borrowableTokens([
+            'WETH',
+            'USDC',
             'WBTC',
             'SolvBTC.b',
             'BTCB',
@@ -45,7 +47,7 @@ async function loop() {
             'COREBTC',
             'stCORE',
         ]);
-        const withdrawableTokens = await Colend.withdrawableTokens(['USDT']);
+        const withdrawableTokens = await Colend.withdrawableTokens([]);
 
         const detectedCommmands = await Telegram.getUpdate();
 
