@@ -203,7 +203,6 @@ async function loop() {
         }
 
         for (const token of withdrawableTokens) {
-            const tokenPrice = await getAssetPrice(token.address);
             for (const colendPoolProxyInstance of junkColendPoolProxyInstances) {
                 let bigintWithdrawableAmount =
                     await colendPoolProxyInstance.proxy.getWithdrawableUsdt();
