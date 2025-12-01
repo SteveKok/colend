@@ -110,7 +110,7 @@ async function loop() {
                     }
 
                     const txReceipt = await tx.wait().catch((err: unknown) => {
-                        Telegram.sendTelegram(JSON.stringify(err));
+                        // Telegram.sendTelegram(JSON.stringify(err));
                         return { status: 0 };
                     });
 
@@ -184,7 +184,7 @@ async function loop() {
                     }
 
                     const txReceipt = await tx.wait().catch((err: unknown) => {
-                        Telegram.sendTelegram(JSON.stringify(err));
+                        // Telegram.sendTelegram(JSON.stringify(err));
                         return { status: 0 };
                     });
 
@@ -252,7 +252,7 @@ async function loop() {
                 }
 
                 const txReceipt = await tx.wait().catch((err: unknown) => {
-                    Telegram.sendTelegram(JSON.stringify(err));
+                    // Telegram.sendTelegram(JSON.stringify(err));
                     return { status: 0 };
                 });
 
@@ -312,7 +312,7 @@ async function loop() {
                 }
 
                 const txReceipt = await tx.wait().catch((err: unknown) => {
-                    Telegram.sendTelegram(JSON.stringify(err));
+                    // Telegram.sendTelegram(JSON.stringify(err));
                     return { status: 0 };
                 });
 
