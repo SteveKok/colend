@@ -219,6 +219,8 @@ async function loop() {
                             dustManagerWallet.wallet.address,
                             bigintWithdrawableAmount
                         );
+
+                        break;
                     } catch (error) {
                         const randomFactor = BigInt(
                             Math.floor(Math.random() * 20) + 70
