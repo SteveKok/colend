@@ -38,10 +38,8 @@ const withdrawColendPoolProxyInstances = dustBorrowWallets.map((wallet) => ({
 async function loop() {
     try {
         const borrowableTokens = await Colend.borrowableTokens([
-            'USDC',
             'WBTC',
             'SolvBTC.b',
-            'WETH',
             'BTCB',
             'USDT',
             'COREBTC',
