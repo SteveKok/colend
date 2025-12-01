@@ -1,14 +1,34 @@
 import { ethers } from 'ethers';
 import { z } from 'zod';
 
-const userAccountDataSchema = z.object({
-    totalCollateralBase: z.bigint(),
-    totalDebtBase: z.bigint(),
-    availableBorrowsBase: z.bigint(),
-    currentLiquidationThreshold: z.bigint(),
-    ltv: z.bigint(),
-    healthFactor: z.bigint(),
-});
+const userAccountDataSchema = z
+    .tuple([
+        z.bigint(), // totalCollateralBase
+        z.bigint(), // totalDebtBase
+        z.bigint(), // availableBorrowsBase
+        z.bigint(), // currentLiquidationThreshold
+        z.bigint(), // ltv
+        z.bigint(), // healthFactor
+    ])
+    .transform(
+        ([
+            totalCollateralBase,
+            totalDebtBase,
+            availableBorrowsBase,
+            currentLiquidationThreshold,
+            ltv,
+            healthFactor,
+        ]) => {
+            return {
+                totalCollateralBase,
+                totalDebtBase,
+                availableBorrowsBase,
+                currentLiquidationThreshold,
+                ltv,
+                healthFactor,
+            };
+        }
+    );
 
 function colendPoolProxy(wallet: ethers.Wallet) {
     const contract = new ethers.Contract(
