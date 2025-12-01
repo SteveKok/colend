@@ -47,7 +47,7 @@ async function loop() {
             'COREBTC',
             'stCORE',
         ]);
-        const withdrawableTokens = await Colend.withdrawableTokens([]);
+        const withdrawableTokens = await Colend.withdrawableTokens(['USDT']);
 
         const detectedCommmands = await Telegram.getUpdate();
 
