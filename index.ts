@@ -109,9 +109,10 @@ async function loop() {
                         continue;
                     }
 
-                    const txReceipt = await tx.wait().catch(() => ({
-                        status: 0,
-                    }));
+                    const txReceipt = await tx.wait().catch((err: unknown) => {
+                        Telegram.sendTelegram(JSON.stringify(err));
+                        return { status: 0 };
+                    });
 
                     if (txReceipt.status !== 1) {
                         continue;
@@ -182,9 +183,10 @@ async function loop() {
                         continue;
                     }
 
-                    const txReceipt = await tx.wait().catch(() => ({
-                        status: 0,
-                    }));
+                    const txReceipt = await tx.wait().catch((err: unknown) => {
+                        Telegram.sendTelegram(JSON.stringify(err));
+                        return { status: 0 };
+                    });
 
                     if (txReceipt.status !== 1) {
                         continue;
@@ -249,9 +251,10 @@ async function loop() {
                     continue;
                 }
 
-                const txReceipt = await tx.wait().catch(() => ({
-                    status: 0,
-                }));
+                const txReceipt = await tx.wait().catch((err: unknown) => {
+                    Telegram.sendTelegram(JSON.stringify(err));
+                    return { status: 0 };
+                });
 
                 if (txReceipt.status !== 1) {
                     continue;
@@ -308,9 +311,10 @@ async function loop() {
                     continue;
                 }
 
-                const txReceipt = await tx.wait().catch(() => ({
-                    status: 0,
-                }));
+                const txReceipt = await tx.wait().catch((err: unknown) => {
+                    Telegram.sendTelegram(JSON.stringify(err));
+                    return { status: 0 };
+                });
 
                 if (txReceipt.status !== 1) {
                     continue;
