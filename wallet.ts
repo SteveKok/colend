@@ -18,6 +18,10 @@ export const aescobarWallets = [
         name: 'Aescobar Account 1',
         wallet: new ethers.Wallet(process.env.AESCOBAR_KEY_1!, jsonRpcProvider),
     },
+    {
+        name: 'Aescobar Account 2',
+        wallet: new ethers.Wallet(process.env.AESCOBAR_KEY_2!, jsonRpcProvider),
+    },
 ];
 
 export const junkWallets = [
