@@ -1,12 +1,7 @@
 import Colend from './contract/colendPoolDataProvider';
 import Telegram from './output/telegram';
 import { colendPoolProxy } from './contract/colendPoolProxy';
-import {
-    aescobarWallets,
-    dustBorrowWallets,
-    dustManagerWallet,
-    junkWallets,
-} from './wallet';
+import { dustBorrowWallets, dustManagerWallet, junkWallets } from './wallet';
 import { getAssetPrice } from './contract/colendOracle';
 import { erc20 } from './contract/erc20';
 import { wcore } from './contract/wcore';
@@ -28,27 +23,13 @@ const junkColendPoolProxyInstances = junkWallets.map((wallet) => ({
     proxy: colendPoolProxy(wallet.wallet),
 }));
 
-const aescobarJunkColendPoolProxyInstances = [aescobarWallets[0]].map(
-    (wallet) => ({
-        name: wallet.name,
-        wallet: wallet.wallet,
-        proxy: colendPoolProxy(wallet.wallet),
-    })
-);
-
-const borrowColendPoolProxyInstances = [
-    aescobarWallets[1],
-    dustBorrowWallets[0],
-].map((wallet) => ({
+const borrowColendPoolProxyInstances = dustBorrowWallets.map((wallet) => ({
     name: wallet.name,
     wallet: wallet.wallet,
     proxy: colendPoolProxy(wallet.wallet),
 }));
 
-const withdrawColendPoolProxyInstances = [
-    aescobarWallets[1],
-    dustBorrowWallets[0],
-].map((wallet) => ({
+const withdrawColendPoolProxyInstances = dustBorrowWallets.map((wallet) => ({
     name: wallet.name,
     wallet: wallet.wallet,
     proxy: colendPoolProxy(wallet.wallet),
@@ -60,6 +41,7 @@ async function loop() {
             'USDC',
             'WBTC',
             'SolvBTC.b',
+            'WETH',
             'BTCB',
             'USDT',
             'COREBTC',
@@ -217,66 +199,6 @@ async function loop() {
         }
 
         for (const token of withdrawableTokens) {
-            for (const colendPoolProxyInstance of aescobarJunkColendPoolProxyInstances) {
-                let bigintWithdrawableAmount =
-                    await colendPoolProxyInstance.proxy.getWithdrawableUsdt();
-
-                bigintWithdrawableAmount =
-                    (bigintWithdrawableAmount * 98n) / 100n;
-
-                let tx;
-
-                let erc20Instance = erc20(
-                    token.aTokenAddress,
-                    colendPoolProxyInstance.wallet
-                );
-
-                while (bigintWithdrawableAmount > 10n * 10n ** 6n) {
-                    try {
-                        tx = await erc20Instance.transferTo(
-                            aescobarWallets[1].wallet.address,
-                            bigintWithdrawableAmount
-                        );
-                    } catch (error) {
-                        const randomFactor = BigInt(
-                            Math.floor(Math.random() * 20) + 70
-                        );
-
-                        bigintWithdrawableAmount =
-                            (bigintWithdrawableAmount * randomFactor) / 100n;
-                    }
-                }
-
-                if (!tx) {
-                    continue;
-                }
-
-                const txReceipt = await tx.wait().catch((err: unknown) => {
-                    // await Telegram.sendTelegram(JSON.stringify(err));
-                    return { status: 0 };
-                });
-
-                if (txReceipt.status !== 1) {
-                    continue;
-                }
-
-                let message = `🏧🏧🏧🏧🏧🏧🏧 <b>Withdrawn aCoreUsdt from junk</b>\n`;
-                message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
-                    colendPoolProxyInstance.name
-                )}</code>\n`;
-                message += `➡️ <b>Amount:</b> <code>${Telegram.escapeHtml(
-                    Number(bigintWithdrawableAmount) / 1e6
-                )}</code>\n\n`;
-                message += `💳 <b>To Account:</b> <code>${Telegram.escapeHtml(
-                    aescobarWallets[1].name
-                )}</code>\n`;
-                message += `🆔 <b>Transaction Hash:</b> https://scan.coredao.org/tx/${Telegram.escapeHtml(
-                    tx.hash
-                )}\n\n`;
-
-                await Telegram.sendTelegram(message);
-            }
-
             for (const colendPoolProxyInstance of junkColendPoolProxyInstances) {
                 let bigintWithdrawableAmount =
                     await colendPoolProxyInstance.proxy.getWithdrawableUsdt();
@@ -357,7 +279,7 @@ async function loop() {
         }
 
         if (detectedCommmands.includes('/unwrap')) {
-            for (const wallet of [...aescobarWallets, ...dustBorrowWallets]) {
+            for (const wallet of dustBorrowWallets) {
                 const wcoreInstance = wcore(wallet.wallet);
                 const unwrap_amount = await wcoreInstance.unwrap();
 
