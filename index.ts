@@ -269,6 +269,8 @@ async function loop() {
             for (const colendPoolProxyInstance of junkColendPoolProxyInstances) {
                 const data =
                     await colendPoolProxyInstance.proxy.getUserAccountData();
+                const withdrawable =
+                    await colendPoolProxyInstance.proxy.getWithdrawableUsdt();
 
                 message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
                     colendPoolProxyInstance.name
@@ -281,6 +283,9 @@ async function loop() {
                 )}</code>\n`;
                 message += `• Health Factor: <code>${Telegram.escapeHtml(
                     (Number(data.healthFactor) / 1e18).toFixed(4)
+                )}</code>\n`;
+                message += `➡️ <b>Withdrawable aCoreUSDT:</b> <code>${Telegram.escapeHtml(
+                    Math.max(Number(withdrawable) / 1e6, 0)
                 )}</code>\n\n`;
             }
 
