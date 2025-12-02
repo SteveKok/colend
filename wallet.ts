@@ -19,10 +19,6 @@ export const junkWallets = [
         wallet: new ethers.Wallet(process.env.EDWARD_KEY_1!, jsonRpcProvider),
     },
     {
-        name: 'Edward Account 2',
-        wallet: new ethers.Wallet(process.env.EDWARD_KEY_2!, jsonRpcProvider),
-    },
-    {
         name: 'Edward Account 3',
         wallet: new ethers.Wallet(process.env.EDWARD_KEY_3!, jsonRpcProvider),
     },
@@ -31,28 +27,12 @@ export const junkWallets = [
         wallet: new ethers.Wallet(process.env.EDWARD_KEY_4!, jsonRpcProvider),
     },
     {
-        name: 'Edward Account 5',
-        wallet: new ethers.Wallet(process.env.EDWARD_KEY_5!, jsonRpcProvider),
-    },
-    {
         name: 'Steve Account 1',
         wallet: new ethers.Wallet(process.env.STEVE_KEY_1!, jsonRpcProvider),
     },
     {
         name: 'Aescobar Account 1',
         wallet: new ethers.Wallet(process.env.AESCOBAR_KEY_1!, jsonRpcProvider),
-    },
-    {
-        name: 'Aescobar Account 2',
-        wallet: new ethers.Wallet(process.env.AESCOBAR_KEY_2!, jsonRpcProvider),
-    },
-    {
-        name: 'Dust Borrower 1',
-        wallet: new ethers.Wallet(process.env.DUST_KEY_1!, jsonRpcProvider),
-    },
-    {
-        name: 'Dust Borrower 2',
-        wallet: new ethers.Wallet(process.env.DUST_KEY_2!, jsonRpcProvider),
     },
     {
         name: 'Dust Borrower 3',
