@@ -275,10 +275,10 @@ async function loop() {
                 )}</code>\n`;
                 message += `• Total Collateral: <code>$ ${Telegram.escapeHtml(
                     (Number(data.totalCollateralBase) / 1e8).toFixed(2)
-                )} CORE</code>\n`;
+                )}</code>\n`;
                 message += `• Total Debt: <code>${Telegram.escapeHtml(
                     (Number(data.totalDebtBase) / 1e8).toFixed(2)
-                )} CORE</code>\n\n`;
+                )}</code>\n\n`;
             }
 
             await Telegram.sendTelegram(message);
