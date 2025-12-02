@@ -270,13 +270,13 @@ async function loop() {
                 const data =
                     await colendPoolProxyInstance.proxy.getUserAccountData();
 
-                message += `💳 <b>Account:</b> <code>$ ${Telegram.escapeHtml(
+                message += `💳 <b>Account:</b> <code>${Telegram.escapeHtml(
                     colendPoolProxyInstance.name
                 )}</code>\n`;
                 message += `• Total Collateral: <code>$ ${Telegram.escapeHtml(
                     (Number(data.totalCollateralBase) / 1e8).toFixed(2)
                 )}</code>\n`;
-                message += `• Total Debt: <code>${Telegram.escapeHtml(
+                message += `• Total Debt: <code>$ ${Telegram.escapeHtml(
                     (Number(data.totalDebtBase) / 1e8).toFixed(2)
                 )}</code>\n\n`;
             }
