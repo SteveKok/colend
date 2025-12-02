@@ -41,6 +41,12 @@ function colendPoolProxy(wallet: ethers.Wallet) {
         wallet
     );
 
+    function getUserAccountData() {
+        return contract
+            .getUserAccountData(wallet.address)
+            .then((data) => userAccountDataSchema.parse(data));
+    }
+
     async function getWithdrawableUsdt() {
         const data = await contract
             .getUserAccountData(wallet.address)
@@ -66,6 +72,7 @@ function colendPoolProxy(wallet: ethers.Wallet) {
         borrow,
         withdraw,
         getWithdrawableUsdt,
+        getUserAccountData,
     };
 }
 

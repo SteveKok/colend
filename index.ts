@@ -15,6 +15,7 @@ await Telegram.init([
     '/collect',
     '/unwrap',
     '/junkSummary',
+    '/junkDetail',
 ]);
 
 const junkColendPoolProxyInstances = junkWallets.map((wallet) => ({
@@ -260,6 +261,27 @@ async function loop() {
 
                 await Telegram.sendTelegram(message);
             }
+        }
+
+        if (detectedCommmands.includes('/junkDetail')) {
+            let message = '📋 <b>Junk Accounts Detail</b>\n\n';
+
+            for (const colendPoolProxyInstance of junkColendPoolProxyInstances) {
+                const data =
+                    await colendPoolProxyInstance.proxy.getUserAccountData();
+
+                message += `💳 <b>Account:</b> <code>$ ${Telegram.escapeHtml(
+                    colendPoolProxyInstance.name
+                )}</code>\n`;
+                message += `• Total Collateral: <code>$ ${Telegram.escapeHtml(
+                    (Number(data.totalCollateralBase) / 1e8).toFixed(2)
+                )} CORE</code>\n`;
+                message += `• Total Debt: <code>${Telegram.escapeHtml(
+                    (Number(data.totalDebtBase) / 1e8).toFixed(2)
+                )} CORE</code>\n\n`;
+            }
+
+            await Telegram.sendTelegram(message);
         }
 
         if (detectedCommmands.includes('/junkSummary')) {
