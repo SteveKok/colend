@@ -278,6 +278,9 @@ async function loop() {
                 )}</code>\n`;
                 message += `• Total Debt: <code>$ ${Telegram.escapeHtml(
                     (Number(data.totalDebtBase) / 1e8).toFixed(2)
+                )}</code>\n`;
+                message += `• Health Factor: <code>${Telegram.escapeHtml(
+                    (Number(data.healthFactor) / 1e18).toFixed(4)
                 )}</code>\n\n`;
             }
 
