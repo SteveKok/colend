@@ -6,7 +6,12 @@ export const dustManagerWallet = {
     wallet: new ethers.Wallet(process.env.DUST_MANAGER!, jsonRpcProvider),
 };
 
-export const dustBorrowWallets = [];
+export const dustBorrowWallets = [
+    {
+        name: 'Dust Borrower 6',
+        wallet: new ethers.Wallet(process.env.DUST_KEY_6!, jsonRpcProvider),
+    },
+];
 
 export const junkWallets = [
     {
